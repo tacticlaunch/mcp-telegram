@@ -40,7 +40,7 @@ npx mcp-telegram logout
 ```
 
 CLI Options for the `mcp` command:
-- `-t, --transport <type>`: Transport type (stdio, http, sse), defaults to 'stdio'
+- `-t, --transport <type>`: Transport type (stdio, sse), defaults to 'stdio'
 - `-p, --port <number>`: Port for HTTP/SSE transport, defaults to 3000
 - `-e, --endpoint <path>`: Endpoint for SSE transport, defaults to 'mcp'
 
@@ -92,7 +92,7 @@ npm run test
 
 ## FastMCP Integration
 
-The server is implemented using FastMCP, which provides a modern TypeScript implementation of the Model Context Protocol. It supports stdio, HTTP, and SSE transports, making it compatible with different client integration approaches.
+The server is implemented using FastMCP, which provides a modern TypeScript implementation of the Model Context Protocol. It supports stdio and SSE transports, making it compatible with different client integration approaches.
 
 ### Server Transports
 
