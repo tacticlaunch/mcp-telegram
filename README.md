@@ -125,15 +125,313 @@ To add another account, ask the agent to call `login` again.
 
 ## Tools
 
-| Tool | Description |
-| --- | --- |
-| `login` | Open the browser-based sign-in flow. Returns the newly authorized account. |
-| `listAccounts` | List Telegram accounts signed in on this machine. |
-| `logout` | Drop the local session and revoke it on Telegram. Requires `accountId`. |
-| `listDialogs` | List dialogs/chats/channels. Filters: `unread`, `archived`, `ignorePinned`, `limit`. |
-| `listMessages` | List messages in a dialog. Params: `dialogId`, `limit`. Newest first. |
+102 tools covering the full Telegram user-account surface. Common ones below; the rest are grouped under collapsibles. Every tool accepts an optional `accountId` (omit when only one account is signed in). `peer` accepts a numeric chat id, an `@username`, or the literal `"me"` (Saved Messages).
 
-Every read tool accepts an optional `accountId`. Omit it when only one account is signed in.
+**Top of the menu:**
+
+| Tool | What it does |
+| --- | --- |
+| `login` | Open the browser-based sign-in flow. Adds an account. |
+| `listAccounts` | List signed-in accounts. |
+| `listDialogs` | List dialogs/chats/channels. Filters: `unread`, `archived`, `ignorePinned`, `folder`, `limit`. |
+| `listMessages` | List messages in a dialog. Newest first. |
+| `searchMessages` | Search inside one dialog: `query`, `filter` (photos/videos/url/voice/...), `fromUser`, date range. |
+| `searchGlobal` | Search across every chat you have. |
+| `searchDialogs` | Find dialogs by name/title/username substring. |
+| `sendMessage` | Send text. Supports `replyTo`, `topMsgId`, `parseMode`, `schedule`, `silent`. |
+| `sendFile` | Send a file (local path or `https://` URL). Pass an array for an album. |
+| `downloadMedia` | Save the media on a message to disk. |
+| `transcribeMessage` | Transcribe a voice/video note (Premium). |
+| `invokeMtproto` | Call any raw MTProto method by name. Auto-resolves `peer`/`channel`/`user` strings. |
+
+<details>
+<summary><b>Accounts & profile</b> (8)</summary>
+
+| Tool | What it does |
+| --- | --- |
+| `login` | Browser-based sign-in. Adds an account. |
+| `logout` | Drop a local session and revoke it on Telegram. |
+| `listAccounts` | List signed-in accounts. |
+| `getMe` | Return the profile of the authenticated user. |
+| `updateProfile` | Change own first/last name and bio. |
+| `updateMyUsername` | Set or clear own `@username`. |
+| `setBirthday` | Set the account birthday. |
+| `setProfilePhoto` | Upload a new avatar (local path or URL). |
+
+</details>
+
+<details>
+<summary><b>Dialog discovery</b> (5)</summary>
+
+| Tool | What it does |
+| --- | --- |
+| `listDialogs` | List dialogs. Filters: `unread`, `archived`, `ignorePinned`, `folder`, `limit`. |
+| `searchDialogs` | Find dialogs by name/title/username substring. |
+| `resolveUsername` | Resolve `@username` to a user/channel/chat entity. |
+| `listFolders` | List custom dialog folders (chat filters). |
+| `listContacts` | List contacts. |
+
+</details>
+
+<details>
+<summary><b>Messages — read & search</b> (6)</summary>
+
+| Tool | What it does |
+| --- | --- |
+| `listMessages` | List messages in a dialog. |
+| `searchMessages` | Search inside one dialog (text, type filter, sender, date range). |
+| `searchGlobal` | Search across every chat. |
+| `getMessage` | Fetch one or more messages by id. |
+| `getMessageReactions` | Get reactions on messages. |
+| `markAsRead` | Mark messages read up to an id. |
+
+</details>
+
+<details>
+<summary><b>Messages — write</b> (8)</summary>
+
+| Tool | What it does |
+| --- | --- |
+| `sendMessage` | Send text. |
+| `editMessage` | Edit a previously sent message. |
+| `deleteMessages` | Delete by id (optionally revoke for all). |
+| `forwardMessages` | Forward messages between dialogs. |
+| `pinMessage` / `unpinMessage` | Pin / unpin in a dialog. |
+| `sendReaction` | Set reactions on a message. |
+| `sendMessageToPhone` | Send to a phone number, auto-creates a temporary contact. |
+
+</details>
+
+<details>
+<summary><b>Media</b> (4)</summary>
+
+| Tool | What it does |
+| --- | --- |
+| `sendFile` | Send a file (path or URL). Albums via array. |
+| `downloadMedia` | Save a message's media to disk. |
+| `downloadProfilePhoto` | Save a peer's avatar to disk. |
+| `transcribeMessage` | Transcribe voice/video (Premium). |
+
+</details>
+
+<details>
+<summary><b>Polls</b> (4)</summary>
+
+| Tool | What it does |
+| --- | --- |
+| `sendPoll` | Send a poll. Supports quiz, multiple-choice, anonymous, close period. |
+| `votePoll` | Cast a vote. |
+| `closePoll` | Finalize a poll. |
+| `getPollResults` | Fetch tally. |
+
+</details>
+
+<details>
+<summary><b>Reactions</b> (3)</summary>
+
+| Tool | What it does |
+| --- | --- |
+| `sendReaction` | Set emoji reactions on a message. |
+| `getMessageReactions` | Read reactions. |
+| `setDefaultReaction` | Set account-wide default. |
+
+</details>
+
+<details>
+<summary><b>Stories</b> (6)</summary>
+
+| Tool | What it does |
+| --- | --- |
+| `listStories` | Feed of contacts' stories. |
+| `getPeerStories` | One peer's stories. |
+| `sendStory` | Post a story (photo or video). |
+| `deleteStory` | Delete own stories. |
+| `viewStory` | Mark stories viewed. |
+| `getStoryViewers` | List who viewed your story. |
+
+</details>
+
+<details>
+<summary><b>Channel / group moderation</b> (11)</summary>
+
+| Tool | What it does |
+| --- | --- |
+| `banUser` | Full ban (optional `untilDate`). |
+| `unbanUser` | Lift restrictions. |
+| `restrictUser` | Apply a custom rights mask. |
+| `promoteAdmin` | Grant admin rights (with rank). |
+| `demoteAdmin` | Strip admin rights. |
+| `inviteUser` | Add users to a channel/supergroup. |
+| `kickParticipant` | Kick from chat/channel. |
+| `getParticipant` | Single participant info. |
+| `listParticipants` | Members with filter (admins/banned/bots/...) and substring search. |
+| `deleteUserHistory` | Remove every message by a user. |
+| `getAdminLog` | Recent admin events with event-type filter. |
+
+</details>
+
+<details>
+<summary><b>Channel / group settings</b> (12)</summary>
+
+| Tool | What it does |
+| --- | --- |
+| `editTitle` | Change title (works for channels, supergroups, and basic groups). |
+| `editAbout` | Change description. |
+| `editPhoto` | Change avatar (path or URL). |
+| `updateUsername` | Set/clear public `@username`. |
+| `checkUsername` | Check availability. |
+| `setSlowMode` | Set slow-mode seconds. |
+| `toggleSignatures` | Author signatures on channel posts. |
+| `togglePreHistoryHidden` | Hide history from new members. |
+| `toggleJoinRequest` | Require admin approval to join. |
+| `leaveChannel` | Leave a channel/supergroup. |
+| `getChannelInfo` | Extended info (about, counts, linked chat, slow-mode). |
+| `getUserInfo` | Extended user info (bio, common chats). |
+
+</details>
+
+<details>
+<summary><b>Channel / group lifecycle</b> (4)</summary>
+
+| Tool | What it does |
+| --- | --- |
+| `createChannel` | New broadcast channel or supergroup (optional forum mode). |
+| `deleteChannel` | Permanently delete. |
+| `migrateChat` | Basic group → supergroup. |
+| `transferOwnership` | Hand over creator rights (requires 2FA password). |
+
+</details>
+
+<details>
+<summary><b>Invite links</b> (4)</summary>
+
+| Tool | What it does |
+| --- | --- |
+| `createInviteLink` | New link with optional expiry, usage cap, join-request gate. |
+| `listInviteLinks` | List active or revoked links. |
+| `revokeInviteLink` | Revoke a specific link. |
+| `listInviteJoiners` | List users that joined via a link. |
+
+</details>
+
+<details>
+<summary><b>Forum topics</b> (3)</summary>
+
+| Tool | What it does |
+| --- | --- |
+| `listTopics` | List forum topics. |
+| `createTopic` | Create a new topic. |
+| `editTopic` | Rename, re-icon, close, hide. |
+
+</details>
+
+<details>
+<summary><b>Drafts</b> (3)</summary>
+
+| Tool | What it does |
+| --- | --- |
+| `saveDraft` | Save a draft for a dialog. |
+| `clearDraft` | Drop the draft for a dialog. |
+| `listDrafts` | List all dialog drafts. |
+
+</details>
+
+<details>
+<summary><b>Notifications</b> (4)</summary>
+
+| Tool | What it does |
+| --- | --- |
+| `mutePeer` | Mute a chat (optional `untilDate`). |
+| `unmutePeer` | Unmute. |
+| `getNotifySettings` | Read settings. |
+| `setNotifySettings` | Update mute, previews, sound, story-mute. |
+
+</details>
+
+<details>
+<summary><b>Folders (chat filters)</b> (4)</summary>
+
+| Tool | What it does |
+| --- | --- |
+| `createFolder` | New folder with include/exclude rules. |
+| `editFolder` | Replace folder rules. |
+| `deleteFolder` | Remove a folder. |
+| `reorderFolders` | Set display order. |
+
+</details>
+
+<details>
+<summary><b>Contacts</b> (4)</summary>
+
+| Tool | What it does |
+| --- | --- |
+| `listContacts` | All contacts. |
+| `addContact` | Add a user to contacts. |
+| `deleteContact` | Remove users from contacts. |
+| `searchContacts` | Search contacts + global directory. |
+
+</details>
+
+<details>
+<summary><b>Privacy & blocking</b> (5)</summary>
+
+| Tool | What it does |
+| --- | --- |
+| `blockUser` / `unblockUser` | Block / unblock. |
+| `listBlocked` | Block list. |
+| `getPrivacy` | Read a privacy key. |
+| `setPrivacy` | Update a privacy key (mode + allow/disallow lists). |
+
+</details>
+
+<details>
+<summary><b>Stickers</b> (3)</summary>
+
+| Tool | What it does |
+| --- | --- |
+| `getMyStickers` | Installed sticker sets. |
+| `installStickerSet` | Install by short name. |
+| `addRecentSticker` | Pin a sticker to recent. |
+
+</details>
+
+<details>
+<summary><b>Premium boosts</b> (2)</summary>
+
+| Tool | What it does |
+| --- | --- |
+| `getMyBoosts` | List your boost slots. |
+| `applyBoost` | Apply slots to a channel. |
+
+</details>
+
+<details>
+<summary><b>Bots & raw MTProto</b> (2)</summary>
+
+| Tool | What it does |
+| --- | --- |
+| `getInlineBotResults` | Run an inline bot query. |
+| `invokeMtproto` | Call any MTProto method by qualified name (e.g. `messages.SendMessage`, `stories.GetAllStories`). String values for `peer`/`channel`/`user`/`fromPeer`/`toPeer`/`bot`/`chat` are auto-resolved to InputPeer / InputUser. |
+
+</details>
+
+### Gating which tools are exposed
+
+Three env vars, applied in order:
+
+| Variable | Effect |
+| --- | --- |
+| `MCP_TELEGRAM_READONLY=1` | Hide every destructive / mutating tool. |
+| `MCP_TELEGRAM_TOOLS=name1,name2,prefix*` | Strict allowlist — only these tools register. |
+| `MCP_TELEGRAM_DISABLE=name1,prefix*` | Blocklist applied after the allowlist. |
+
+Examples:
+
+```bash
+MCP_TELEGRAM_READONLY=1                                    # read-only agent
+MCP_TELEGRAM_TOOLS='login,list*,search*,get*'              # discovery-only
+MCP_TELEGRAM_DISABLE='delete*,ban*,kick*,createChannel,deleteChannel,transferOwnership,invokeMtproto'  # safer write set
+```
 
 ## Environment
 
