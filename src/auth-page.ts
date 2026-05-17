@@ -217,6 +217,9 @@ export function renderAuthPage(
   .tool-item .tool-name { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12px; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .tool-item .tool-desc { color: var(--muted); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .tool-item.hidden { display: none; }
+  .tool-item.muted-by-ro { opacity: 0.4; }
+  .tool-item.muted-by-ro .tool-name { text-decoration: line-through; }
+  .setting-source:empty { display: none; }
   input[type="checkbox"][disabled] + label,
   .tool-item input[disabled] ~ label { opacity: 0.5; cursor: not-allowed; }
   .settings-footer {
@@ -482,7 +485,7 @@ export function renderAuthPage(
 
   function sourceLabel(s) {
     return s.source === 'env' ? 'set via env (locked)' :
-           s.source === 'stored' ? 'saved locally' : 'default';
+           s.source === 'stored' ? 'saved locally' : '';
   }
 
   /**
@@ -571,6 +574,7 @@ export function renderAuthPage(
         const item = document.createElement('div');
         item.className = 'tool-item';
         item.dataset.tool = t.name;
+        if (t.mutating) item.dataset.mutating = '1';
         item.innerHTML =
           '<input type="checkbox" id="' + id + '" ' + (enabled.has(t.name) ? 'checked' : '') +
             (locked ? ' disabled' : '') + ' />' +
@@ -599,7 +603,7 @@ export function renderAuthPage(
       };
       list.addEventListener('change', () => { updateGroupCount(card); updateSummary(); });
     }
-    updateSummary();
+    applyReadonlyState();
   }
 
   function updateGroupCount(card) {
@@ -611,8 +615,36 @@ export function renderAuthPage(
   function updateSummary() {
     const all = document.querySelectorAll('#tool-groups input[type="checkbox"]');
     const on = document.querySelectorAll('#tool-groups input[type="checkbox"]:checked');
-    $('settings-summary').textContent = on.length + ' / ' + all.length + ' tools enabled';
+    const ro = $('set-readonly').checked;
+    const mutedByRo = ro
+      ? document.querySelectorAll('#tool-groups .tool-item[data-mutating="1"]').length
+      : 0;
+    const effective = ro
+      ? Array.from(on).filter((cb) => !cb.closest('.tool-item').dataset.mutating).length
+      : on.length;
+    $('settings-summary').textContent =
+      effective + ' / ' + all.length + ' tools enabled' +
+      (mutedByRo ? ' · ' + mutedByRo + ' hidden by read-only' : '');
   }
+
+  /**
+   * Reflect the read-only toggle in the per-tool grid: mutating tools
+   * become disabled (and visually greyed) without losing their stored
+   * checked state, so unticking read-only restores the previous
+   * selection.
+   */
+  function applyReadonlyState() {
+    const ro = $('set-readonly').checked;
+    const toolsAreLocked = toolsLocked();
+    for (const item of document.querySelectorAll('#tool-groups .tool-item[data-mutating="1"]')) {
+      const cb = item.querySelector('input[type="checkbox"]');
+      cb.disabled = toolsAreLocked || ro;
+      item.classList.toggle('muted-by-ro', ro);
+    }
+    updateSummary();
+  }
+
+  $('set-readonly').addEventListener('change', applyReadonlyState);
 
   $('tool-filter').oninput = (e) => {
     const q = e.target.value.trim().toLowerCase();
