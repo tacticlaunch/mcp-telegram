@@ -1,7 +1,7 @@
 {
   "name": "mcp-telegram",
   "version": "3.0.0",
-  "description": "Telegram MCP server (MTProto). Connect Claude, Codex, Cursor, Claude Code, VS Code, Cline, Windsurf, and other MCP clients to a real Telegram user account: read dialogs, search messages globally, send/edit/forward, react/poll, moderate channels, tag Saved Messages (Premium reaction-tags), manage stories/contacts/folders, transcribe voice notes, and call any raw MTProto method. Browser-based local sign-in, multi-account. For a lazy-loaded skill/CLI alternative see telegram-skill.",
+  "description": "Telegram MCP server (MTProto). Connect Claude, Codex, Cursor, Claude Code, VS Code, Cline, Windsurf, and other MCP clients to a real Telegram user account: read dialogs, search messages globally, send/edit/forward, react/poll, moderate channels, tag Saved Messages (Premium reaction-tags), manage stories/contacts/folders, transcribe voice notes, and call any raw MTProto method. Browser-based local sign-in, multi-account. For a lazy-loaded skill/CLI alternative see telegram-agent.",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

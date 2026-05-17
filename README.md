@@ -5,7 +5,7 @@
   <h1 align="center">mcp-telegram</h1>
 </p>
 <p align="center">
-  <b>Telegram MCP server</b> for Claude, Codex, Cursor, Claude Code, VS Code, Cline, Windsurf, and other MCP clients. Real Telegram user account via MTProto, browser-based local sign-in, 100+ tools. Need lazy-loading + lower context cost? See <a href="https://github.com/beautyfree/telegram-skill"><b>telegram-skill</b></a>, the skill-based companion.
+  <b>Telegram MCP server</b> for Claude, Codex, Cursor, Claude Code, VS Code, Cline, Windsurf, and other MCP clients. Real Telegram user account via MTProto, browser-based local sign-in, 100+ tools. Need lazy-loading + lower context cost? See <a href="https://github.com/beautyfree/telegram-agent"><b>telegram-agent</b></a>, the skill-based companion.
 </p>
 <div align="center">
 
@@ -31,12 +31,12 @@ A [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server that co
 
 This package is the **MCP server** — every tool schema (~12,700 tokens) sits in your agent's context on every turn. Good for any MCP client and for hosted runtimes that can't shell out.
 
-If your agent is **Claude Code / Codex CLI / Cursor / Gemini CLI / Cline / Windsurf**, there's a [companion package — `telegram-skill`](https://github.com/beautyfree/telegram-skill) — that ships the same Telegram surface as a [universal agent skill](https://code.claude.com/docs/en/skills). The agent only loads the skill instructions when your prompt mentions Telegram — **~50× lower context cost** in idle. Standalone (no MCP server in the loop), but uses the same `~/.telegram-agent/` session store as this package — sign in once, use either or both.
+If your agent is **Claude Code / Codex CLI / Cursor / Gemini CLI / Cline / Windsurf**, there's a [companion package — `telegram-agent`](https://github.com/beautyfree/telegram-agent) — that ships the same Telegram surface as a [universal agent skill](https://code.claude.com/docs/en/skills). The agent only loads the skill instructions when your prompt mentions Telegram — **~50× lower context cost** in idle. Standalone (no MCP server in the loop), but uses the same `~/.telegram-agent/` session store as this package — sign in once, use either or both.
 
 ```bash
-npm i -g telegram-skill
-tg-skill login
-tg-skill install        # auto-detect every supported agent on your machine
+npm i -g telegram-agent
+telegram-agent login
+npx skills add beautyfree/telegram-agent -a claude-code -g
 ```
 
 Continue below for the MCP install path.

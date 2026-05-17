@@ -36,7 +36,7 @@ interface StateShape {
 
 /**
  * Shared on-disk home for the Telegram session store. Both this package
- * and the companion `telegram-skill` package read/write here so one
+ * and the companion `telegram-agent` package read/write here so one
  * `login` covers both transports.
  *
  * Env override accepts the new `TELEGRAM_AGENT_HOME` name as well as the
