@@ -31,7 +31,7 @@ A [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server that co
 
 This package is the **MCP server** — every tool schema (~12,700 tokens) sits in your agent's context on every turn. Good for any MCP client and for hosted runtimes that can't shell out.
 
-If your agent is **Claude Code / Codex CLI / Cursor / Gemini CLI / Cline / Windsurf**, there's a [companion package — `telegram-skill`](https://github.com/beautyfree/telegram-skill) — that ships the same Telegram surface as a [universal agent skill](https://code.claude.com/docs/en/skills). The agent only loads the skill instructions when your prompt mentions Telegram — **~50× lower context cost** in idle. `telegram-skill` depends on this package for the MTProto core, so the two are interoperable (same session, same login).
+If your agent is **Claude Code / Codex CLI / Cursor / Gemini CLI / Cline / Windsurf**, there's a [companion package — `telegram-skill`](https://github.com/beautyfree/telegram-skill) — that ships the same Telegram surface as a [universal agent skill](https://code.claude.com/docs/en/skills). The agent only loads the skill instructions when your prompt mentions Telegram — **~50× lower context cost** in idle. Standalone (no MCP server in the loop), but uses the same `~/.mcp-telegram/` session store as this package — sign in once, use either or both.
 
 ```bash
 npm i -g telegram-skill
