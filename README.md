@@ -5,7 +5,7 @@
   <h1 align="center">mcp-telegram</h1>
 </p>
 <p align="center">
-  Telegram in your AI agent. MCP server for the user account API (MTProto), with browser-based sign-in and 100+ tools.
+  <b>Telegram MCP server</b> for Claude, Cursor, Claude Code, VS Code, Codex, Cline, Windsurf, and other MCP clients. Real Telegram user account via MTProto, browser-based local sign-in, 100+ tools.
 </p>
 <div align="center">
 
@@ -15,7 +15,7 @@
 
 </div>
 
-A [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server that connects [Cursor](https://cursor.com), [Claude Desktop](https://claude.ai), and any other MCP client to a real Telegram account via [MTProto](https://core.telegram.org/mtproto)—so your agent can read, search, send, moderate, and manage chats from chat or automated tool calls instead of clicking through the Telegram UI.
+A [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server that connects [Cursor](https://cursor.com), [Claude Desktop](https://claude.ai), [Claude Code](https://claude.ai/code), VS Code, Codex, Cline, Windsurf, Goose, and any other MCP-compatible client to a real Telegram user account via [MTProto](https://core.telegram.org/mtproto)—so your agent can read, search, send, moderate, and manage Telegram chats from chat or automated tool calls instead of clicking through the Telegram UI.
 
 **Use it to:** read dialogs and search messages globally · send/edit/forward/react/poll · download media and transcribe voice notes · moderate channels (ban/restrict/promote, invite links, slow-mode, admin log, forum topics) · manage stories, contacts, drafts, notifications, folders, privacy · or fall through to the raw MTProto bridge for anything else. All against a single signed-in user account—no bot required.
 
@@ -180,3 +180,12 @@ src/
 ## License
 
 MIT — see [LICENSE](LICENSE).
+
+---
+
+<details>
+<summary>Also known as</summary>
+
+Telegram MCP · MCP Telegram · Telegram MCP server · Telegram for Claude · Telegram for Cursor · Telegram for Claude Code · Telegram for VS Code · Telegram for Codex · Telegram for Cline · Telegram for Windsurf · Telegram for AI agents · Telegram MTProto MCP · Telegram user-account MCP · Telegram automation MCP · Model Context Protocol Telegram · MCP server Telegram · gramjs MCP
+
+</details>
