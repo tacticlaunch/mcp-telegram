@@ -3,7 +3,7 @@ import { z } from 'zod';
 import type { ToolContext } from './_registry.js';
 import { listAccounts } from '../state.js';
 import { logoutAccount } from '../telegram.js';
-import { runBrowserLogin } from '../auth-browser.js';
+import { runBrowserLogin, runBrowserSettings } from '../auth-browser.js';
 import { resolveAccountId, safeClient, serializeEntity } from './_helpers.js';
 
 export function register({ reg, regWrite }: ToolContext): void {
@@ -72,6 +72,34 @@ export function register({ reg, regWrite }: ToolContext): void {
       const client = await safeClient(accountId);
       const me = await client.getMe();
       return { content: [{ type: 'text', text: JSON.stringify(serializeEntity(me), null, 2) }] };
+    }
+  );
+
+  reg(
+    'openSettings',
+    {
+      // Spawns a local browser tab — touches external state (file system,
+      // browser process) but is otherwise read-only from Telegram's view.
+      annotations: { openWorldHint: true },
+      title: 'Open the mcp-telegram settings page',
+      description:
+        'Open a local browser tab where the user can toggle read-only mode and edit ' +
+        'the tool allowlist / blocklist. Resolves when the user closes the tab. ' +
+        'Changes are persisted to ~/.mcp-telegram/state.json; the MCP client must ' +
+        'be restarted to pick them up. Env vars (MCP_TELEGRAM_READONLY / TOOLS / DISABLE) ' +
+        'override stored values and are shown as locked in the UI.',
+      inputSchema: {},
+    },
+    async () => {
+      await runBrowserSettings();
+      return {
+        content: [
+          {
+            type: 'text',
+            text: 'Settings page closed. Restart your MCP client to apply any changes.',
+          },
+        ],
+      };
     }
   );
 }

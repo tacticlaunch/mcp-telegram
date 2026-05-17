@@ -86,14 +86,24 @@ function settingsSnapshot(): SettingsSnapshot {
  * flow against it, and resolves once the user finishes (or rejects on
  * timeout / explicit cancel).
  */
+type PageMode = 'login' | 'settings';
+
 export function runBrowserLogin(opts: { timeoutMs?: number } = {}): Promise<AccountRecord> {
+  return runBrowserPage('login', opts) as Promise<AccountRecord>;
+}
+
+export function runBrowserSettings(opts: { timeoutMs?: number } = {}): Promise<void> {
+  return runBrowserPage('settings', opts) as Promise<void>;
+}
+
+function runBrowserPage(mode: PageMode, opts: { timeoutMs?: number }): Promise<AccountRecord | void> {
   // The HTTP server lives this long total — long enough that the user
   // can inspect/edit settings after a successful auth before the tab
   // becomes dead.
   const timeoutMs = opts.timeoutMs ?? 10 * 60_000;
   const authId = randomBytes(16).toString('base64url');
 
-  return new Promise<AccountRecord>((resolve, reject) => {
+  return new Promise<AccountRecord | void>((resolve, reject) => {
     let serverClosed = false;
     let promiseSettled = false;
 
@@ -127,7 +137,13 @@ export function runBrowserLogin(opts: { timeoutMs?: number } = {}): Promise<Acco
     });
 
     const timer = setTimeout(() => {
-      settlePromise(() => reject(new Error('Login timed out')));
+      if (mode === 'settings') {
+        // In settings mode, hitting the timeout just means the user
+        // walked away — that's not a failure.
+        settlePromise(() => resolve(undefined));
+      } else {
+        settlePromise(() => reject(new Error('Login timed out')));
+      }
       shutdown();
     }, timeoutMs);
 
@@ -138,7 +154,11 @@ export function runBrowserLogin(opts: { timeoutMs?: number } = {}): Promise<Acco
       }
       const baseUrl = `http://127.0.0.1:${address.port}`;
       const authUrl = `${baseUrl}/`;
-      logger.info(`Opening browser for Telegram login: ${authUrl}`);
+      logger.info(
+        mode === 'settings'
+          ? `Opening settings page: ${authUrl}`
+          : `Opening browser for Telegram login: ${authUrl}`
+      );
       try {
         await open(authUrl);
       } catch (err) {
@@ -159,7 +179,7 @@ export function runBrowserLogin(opts: { timeoutMs?: number } = {}): Promise<Acco
           LOG_LEVEL: process.env.LOG_LEVEL,
         };
         res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
-        return res.end(renderAuthPage(authId, accounts, creds, env, pkgMeta, settingsSnapshot()));
+        return res.end(renderAuthPage(authId, accounts, creds, env, pkgMeta, settingsSnapshot(), mode));
       }
 
       if (req.method === 'GET' && url.pathname === '/logo.png') {
@@ -268,6 +288,9 @@ export function runBrowserLogin(opts: { timeoutMs?: number } = {}): Promise<Acco
 
       if (url.pathname === '/authorize/close') {
         sendJson(res, 200, { ok: true });
+        // In settings-only mode the promise is still pending — resolve it
+        // here so the calling tool returns cleanly.
+        if (mode === 'settings') settlePromise(() => resolve(undefined));
         // Give the response a moment to flush before we tear down.
         setTimeout(shutdown, 200);
         return;

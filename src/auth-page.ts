@@ -35,7 +35,8 @@ export function renderAuthPage(
   creds: CredentialsHint,
   env: EnvSnapshot,
   pkg: PackageMeta,
-  settings: SettingsSnapshot
+  settings: SettingsSnapshot,
+  initialStep: 'login' | 'settings' = 'login'
 ): string {
   const brandLink = pkg.repoUrl
     ? `<a href="${escapeAttr(pkg.repoUrl)}" target="_blank" rel="noopener">${escapeText(pkg.name)}</a>`
@@ -240,9 +241,9 @@ export function renderAuthPage(
 
     <div id="step-done" class="step">
       <div class="success">
-        <div class="check">&check;</div>
-        <h1>Signed in</h1>
-        <p class="lede">Configure which tools the agent sees, then close this tab.</p>
+        <div class="check" id="done-check">&check;</div>
+        <h1 id="done-title">Signed in</h1>
+        <p class="lede" id="done-lede">Configure which tools the agent sees, then close this tab.</p>
       </div>
     </div>
   </div>
@@ -301,6 +302,7 @@ export function renderAuthPage(
   let creds = ${credsJson};
   const env = ${envJson};
   let settings = ${settingsJson};
+  const INITIAL_STEP = ${JSON.stringify(initialStep)};
 
   const $ = (id) => document.getElementById(id);
   const show = (id) => {
@@ -484,7 +486,16 @@ export function renderAuthPage(
     window.close();
   };
 
-  startFlow();
+  // Settings-only entry: skip auth flow, go straight to the settings card.
+  if (INITIAL_STEP === 'settings') {
+    $('done-check').style.display = 'none';
+    $('done-title').textContent = 'Settings';
+    $('done-lede').textContent = 'Pick which tools the agent sees, then close this tab.';
+    renderEnvTable();
+    finish();
+  } else {
+    startFlow();
+  }
 </script>
 </body>
 </html>`;
