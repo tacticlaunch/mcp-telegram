@@ -89,6 +89,20 @@ export const TOOL_CATALOG: ToolGroup[] = [
     ],
   },
   {
+    id: 'saved',
+    title: 'Saved Messages (tags)',
+    tools: [
+      { name: 'get_saved_reaction_tags', desc: 'List tag reactions (Premium)' },
+      { name: 'update_saved_reaction_tag', desc: 'Rename a tag', mutating: true },
+      { name: 'get_default_tag_reactions', desc: 'Suggested tag emojis' },
+      { name: 'search_saved_messages', desc: 'Search Saved + filter by tag' },
+      { name: 'get_saved_dialogs', desc: 'Saved sub-dialogs (per origin)' },
+      { name: 'get_saved_history', desc: 'Messages in one saved sub-dialog' },
+      { name: 'delete_saved_history', desc: 'Wipe a saved sub-dialog', mutating: true },
+      { name: 'toggle_saved_dialog_pin', desc: 'Pin/unpin saved sub-dialog', mutating: true },
+    ],
+  },
+  {
     id: 'media',
     title: 'Media',
     tools: [

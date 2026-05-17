@@ -427,6 +427,17 @@ export function renderAuthPage(
 
   async function pickExisting(accountId) {
     const r = await fetch('/authorize/use-account', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ auth_id: AUTH_ID, account_id: accountId }) });
+    if (r.status === 401) {
+      const body = await r.json().catch(() => ({}));
+      if (body.error === 'session_expired') {
+        if (body.phone) {
+          $('phone').value = body.phone;
+          $('phone-echo').textContent = body.phone;
+        }
+        showErr('err-phone', 'Session expired — sign in again to refresh.');
+        return show('step-phone');
+      }
+    }
     if (!r.ok) return alert('Failed to use account');
     finish();
   }

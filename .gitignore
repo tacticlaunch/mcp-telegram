@@ -36,3 +36,8 @@ config/
 .mcp.json
 opencode.json
 Users/
+
+# Private outreach lists (personal Telegram contacts)
+docs/outreach-instructions.md
+docs/outreach-telegram-contacts.csv
+docs/outreach-telegram-contacts.md

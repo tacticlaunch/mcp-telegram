@@ -6,6 +6,7 @@ import * as profile from './profile.js';
 import * as dialogs from './dialogs.js';
 import * as messagesRead from './messages-read.js';
 import * as messagesWrite from './messages-write.js';
+import * as saved from './saved.js';
 import * as media from './media.js';
 import * as reactions from './reactions.js';
 import * as polls from './polls.js';
@@ -31,6 +32,7 @@ const MODULES = [
   dialogs,
   messagesRead,
   messagesWrite,
+  saved,
   media,
   reactions,
   polls,

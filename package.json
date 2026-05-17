@@ -1,7 +1,7 @@
 {
   "name": "mcp-telegram",
-  "version": "2.0.0",
-  "description": "Telegram MCP server (MTProto). Connect Claude, Cursor, Claude Code, VS Code, Codex, Cline, Windsurf, and other MCP clients to a real Telegram user account: read dialogs, search messages globally, send/edit/forward, react/poll, moderate channels, manage stories/contacts/folders, transcribe voice notes, and call any raw MTProto method. Browser-based local sign-in, multi-account.",
+  "version": "3.0.0",
+  "description": "Telegram for AI agents (MTProto). Ships two transports: a 12k-token MCP server for Claude/Cursor/Codex/VS Code/Cline/Windsurf, and a `mcp-tg` CLI + agent-skill bundle for lazy-loaded use in Claude Code, Codex CLI, and Cursor (~50× lower context cost). Read dialogs, global search, send/edit/forward/react, tag Saved Messages (Premium reaction-tags), moderate channels, transcribe voice. Browser-based sign-in, multi-account.",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -58,18 +58,29 @@
     "messaging",
     "chat",
     "channel-management",
-    "moderation"
+    "moderation",
+    "agent-skills",
+    "skill",
+    "skills",
+    "claude-code-skills",
+    "codex-skills",
+    "cursor-rules",
+    "saved-messages",
+    "telegram-tags"
   ],
   "files": [
     "dist",
-    "assets"
+    "assets",
+    "skills"
   ],
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
+    "cli": "node dist/cli.js",
     "dev": "tsx watch src/index.ts",
     "lint": "eslint src --ext .ts",
-    "prepublishOnly": "npm run build && chmod +x dist/index.js"
+    "measure-tokens": "node scripts/measure-tokens.mjs",
+    "prepublishOnly": "npm run build && chmod +x dist/index.js dist/cli.js"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
@@ -91,7 +102,8 @@
     "node": ">=20.0.0"
   },
   "bin": {
-    "mcp-telegram": "dist/index.js"
+    "mcp-telegram": "dist/index.js",
+    "mcp-tg": "dist/cli.js"
   },
   "publishConfig": {
     "access": "public"

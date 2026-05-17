@@ -18,6 +18,8 @@ import {
   loginSubmitCode,
   loginSubmitPassword,
   credentialsStatus,
+  clientForAccount,
+  TelegramAuthError,
 } from './telegram.js';
 import { AccountRecord } from './state.js';
 import { logger } from './logger.js';
@@ -259,6 +261,19 @@ function runBrowserPage(mode: PageMode, opts: { timeoutMs?: number }): Promise<A
         const id = String(body.account_id || '');
         const account = listAccounts().find((a) => a.id === id);
         if (!account) return sendJson(res, 404, { error: 'account not found' });
+        try {
+          const client = await clientForAccount(id);
+          await client.getMe();
+        } catch (err) {
+          if (err instanceof TelegramAuthError) {
+            return sendJson(res, 401, {
+              error: 'session_expired',
+              phone: account.phone,
+              username: account.username,
+            });
+          }
+          return sendJson(res, 500, { error: (err as Error).message });
+        }
         settlePromise(() => resolve(account));
         return sendJson(res, 200, { redirect: '/done' });
       }
