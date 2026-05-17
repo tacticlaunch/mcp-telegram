@@ -78,7 +78,9 @@ export function renderAuthPage(
     background: var(--bg); color: var(--fg);
     font: 15px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   }
-  .wrap { width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 12px; align-items: center; }
+  .wrap { width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 14px; align-items: center; transition: max-width .15s ease; }
+  body.wide .wrap { max-width: 1100px; }
+  body.settings-only .card { display: none; }
   .header { display: flex; flex-direction: column; align-items: center; gap: 6px; }
   .logo { width: 56px; height: 56px; object-fit: contain; }
   .brand-line { font-size: 12px; color: var(--muted); letter-spacing: 0.02em; margin: 0; }
@@ -143,68 +145,83 @@ export function renderAuthPage(
     border-top: 1px solid var(--border);
     font-size: 12px;
   }
+  /* ── settings card ─────────────────────────────────────────────── */
   .settings {
-    width: min(560px, calc(100vw - 48px));
-    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
-    padding: 18px; display: flex; flex-direction: column; gap: 14px;
+    width: 100%;
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    display: flex; flex-direction: column; overflow: hidden;
   }
-  .settings-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
-  .settings-summary { font-size: 12px; color: var(--muted); padding: 4px 8px; background: var(--input); border-radius: 8px; white-space: nowrap; }
+  .settings.hidden { display: none; }
+  .settings-top {
+    padding: 18px 22px; border-bottom: 1px solid var(--border);
+    display: grid; grid-template-columns: 1fr auto; gap: 14px; align-items: center;
+  }
+  .settings-top h2 { margin: 0; font-size: 18px; font-weight: 600; }
+  .settings-top .lede { margin: 3px 0 0; font-size: 13px; color: var(--muted); }
+  .settings-summary { font-size: 12px; color: var(--muted); padding: 5px 10px; background: var(--input); border-radius: 8px; white-space: nowrap; }
+  .settings-meta {
+    padding: 12px 22px; border-bottom: 1px solid var(--border);
+    display: flex; flex-wrap: wrap; gap: 14px 22px; align-items: center;
+  }
+  .setting-head { display: flex; align-items: center; gap: 8px; }
+  .setting-name { font-size: 13px; font-weight: 500; color: var(--fg); }
+  .setting-source { font-size: 11px; color: var(--muted); }
+  .setting-source.env { color: var(--accent); }
+  .toggle { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--fg); cursor: pointer; }
+  .toggle input { width: auto; }
   .env-pinned {
-    padding: 8px 10px; background: var(--input); border: 1px solid var(--border);
+    flex: 1 1 260px;
+    padding: 8px 12px; background: var(--input); border: 1px solid var(--border);
     border-radius: 8px; font-size: 12px; color: var(--muted);
   }
   .env-pinned.hidden { display: none; }
-  .env-pinned code { background: transparent; color: var(--fg); }
-  .tool-toolbar { display: flex; gap: 6px; align-items: stretch; }
-  .tool-toolbar input { flex: 1; padding: 7px 10px; font-size: 13px; }
-  button.mini { padding: 7px 10px; margin: 0; font-size: 12px; font-weight: 500; }
-  #tool-groups { display: flex; flex-direction: column; gap: 6px; max-height: 50vh; overflow-y: auto; padding-right: 2px; }
-  .tool-group { border: 1px solid var(--border); border-radius: 8px; background: var(--input); }
-  .tool-group summary { padding: 10px 12px; cursor: pointer; user-select: none; display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13px; font-weight: 500; }
-  .tool-group summary::-webkit-details-marker { display: none; }
-  .tool-group summary::before { content: "▸"; display: inline-block; transition: transform .15s; color: var(--muted); }
-  .tool-group[open] summary::before { transform: rotate(90deg); }
-  .tool-group-head { display: flex; align-items: center; gap: 8px; flex: 1; }
-  .tool-group-count { color: var(--muted); font-size: 12px; font-weight: 400; }
+  .env-pinned code { background: transparent; color: var(--fg); padding: 0; }
+  .settings-toolbar {
+    padding: 12px 22px; border-bottom: 1px solid var(--border);
+    display: flex; gap: 8px; align-items: center;
+  }
+  .settings-toolbar input { flex: 1; padding: 9px 12px; font-size: 13px; }
+  button.mini { padding: 9px 14px; margin: 0; font-size: 12.5px; font-weight: 500; }
+  #tool-groups {
+    padding: 18px 22px;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+    overflow-y: auto;
+    max-height: min(60vh, 720px);
+  }
+  .tool-group {
+    border: 1px solid var(--border); border-radius: 10px; background: var(--input);
+    display: flex; flex-direction: column;
+  }
+  .tool-group.empty { display: none; }
+  .tool-group-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 12px; gap: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .tool-group-title { font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; }
+  .tool-group-count { color: var(--muted); font-size: 11.5px; font-weight: 400; }
   .tool-group-actions { display: flex; gap: 4px; }
-  .tool-group-actions button { padding: 3px 8px; margin: 0; font-size: 11px; background: transparent; border: 1px solid var(--border); color: var(--muted); border-radius: 6px; }
+  .tool-group-actions button { padding: 3px 8px; margin: 0; font-size: 11px; background: transparent; border: 1px solid var(--border); color: var(--muted); border-radius: 6px; cursor: pointer; }
   .tool-group-actions button:hover { color: var(--accent); border-color: var(--accent); }
-  .tool-list { padding: 4px 12px 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; }
-  @media (max-width: 480px) { .tool-list { grid-template-columns: 1fr; } }
-  .tool-item { display: flex; align-items: center; gap: 6px; font-size: 12px; padding: 3px 0; min-width: 0; }
+  .tool-list { padding: 6px 8px 8px; display: flex; flex-direction: column; gap: 1px; }
+  .tool-item { display: flex; align-items: center; gap: 8px; font-size: 12px; padding: 4px 6px; min-width: 0; border-radius: 6px; }
+  .tool-item:hover { background: rgba(127,127,127,0.06); }
   .tool-item input { width: auto; margin: 0; flex-shrink: 0; }
-  .tool-item label { color: var(--fg); cursor: pointer; flex: 1; min-width: 0; display: flex; flex-direction: column; }
-  .tool-item .tool-name { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tool-item label { cursor: pointer; flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+  .tool-item .tool-name { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12px; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .tool-item .tool-desc { color: var(--muted); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .tool-item.hidden { display: none; }
   input[type="checkbox"][disabled] + label,
   .tool-item input[disabled] ~ label { opacity: 0.5; cursor: not-allowed; }
-  .settings.hidden { display: none; }
-  .settings-title { margin: 0; font-size: 15px; font-weight: 600; }
-  .settings-lede { margin: -4px 0 0; font-size: 12px; color: var(--muted); }
-  .setting-row { display: flex; flex-direction: column; gap: 6px; }
-  .setting-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
-  .setting-name { font-size: 13px; font-weight: 500; }
-  .setting-name code { background: var(--input); padding: 1px 5px; border-radius: 4px; font-size: 11px; }
-  .setting-source { font-size: 11px; color: var(--muted); }
-  .setting-source.env { color: var(--accent); }
-  .toggle { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); cursor: pointer; }
-  .toggle input { width: auto; }
-  textarea {
-    width: 100%; padding: 10px 12px;
-    background: var(--input); color: var(--fg);
-    border: 1px solid var(--border); border-radius: 8px;
-    font: 13px/1.4 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-    outline: none; resize: vertical;
+  .settings-footer {
+    padding: 12px 22px; border-top: 1px solid var(--border);
+    display: flex; gap: 12px; align-items: center;
   }
-  textarea:focus { border-color: var(--accent); }
-  textarea[disabled], input[type="checkbox"][disabled] { opacity: 0.5; cursor: not-allowed; }
-  .setting-actions { display: flex; gap: 8px; }
-  .setting-actions button { flex: 1; margin-top: 0; }
-  .settings-msg { font-size: 12px; color: var(--muted); min-height: 16px; }
+  .settings-msg { flex: 1; font-size: 12px; color: var(--muted); min-height: 16px; }
   .settings-msg.ok { color: var(--accent); }
   .settings-msg.err { color: var(--danger); }
+  .settings-footer button { width: auto; padding: 9px 18px; margin: 0; font-size: 13px; }
   details summary {
     color: var(--muted); cursor: pointer; user-select: none;
     list-style: none; display: flex; align-items: center; gap: 6px;
@@ -287,42 +304,38 @@ export function renderAuthPage(
   </div>
 
   <div id="settings-card" class="settings hidden">
-    <div class="settings-header">
+    <div class="settings-top">
       <div>
-        <h2 class="settings-title">Tool surface</h2>
-        <p class="settings-lede">Pick which tools the agent sees. Restart your MCP client after saving.</p>
+        <h2>Tool surface</h2>
+        <p class="lede">Pick which tools the agent sees. Restart your MCP client after saving.</p>
       </div>
       <div class="settings-summary" id="settings-summary"></div>
     </div>
 
-    <div class="setting-row">
-      <label class="setting-head">
+    <div class="settings-meta">
+      <label class="toggle">
+        <input id="set-readonly" type="checkbox" />
         <span class="setting-name">Read-only mode</span>
         <span class="setting-source" id="src-readonly"></span>
       </label>
-      <label class="toggle">
-        <input id="set-readonly" type="checkbox" />
-        <span>Hide every destructive / mutating tool</span>
-      </label>
+      <div id="env-pinned" class="env-pinned hidden">
+        Per-tool selection is pinned by <code>MCP_TELEGRAM_TOOLS</code> / <code>MCP_TELEGRAM_DISABLE</code> in the environment. Unset them to edit here.
+      </div>
     </div>
 
-    <div id="env-pinned" class="env-pinned hidden">
-      Per-tool selection is pinned by <code>MCP_TELEGRAM_TOOLS</code> / <code>MCP_TELEGRAM_DISABLE</code> in the environment. Unset those to edit here.
-    </div>
-
-    <div class="tool-toolbar">
-      <input id="tool-filter" type="search" placeholder="Filter tools…" />
-      <button id="select-all" class="ghost mini">All</button>
-      <button id="select-none" class="ghost mini">None</button>
+    <div class="settings-toolbar">
+      <input id="tool-filter" type="search" placeholder="Filter tools by name…" />
+      <button id="select-all" class="ghost mini">Select all</button>
+      <button id="select-none" class="ghost mini">Select none</button>
     </div>
 
     <div id="tool-groups"></div>
 
-    <div class="setting-actions">
-      <button id="save-settings">Save</button>
+    <div class="settings-footer">
+      <div class="settings-msg" id="settings-msg"></div>
       <button id="close-tab" class="ghost">Close</button>
+      <button id="save-settings">Save</button>
     </div>
-    <div class="settings-msg" id="settings-msg"></div>
   </div>
 
   <div class="foot">
@@ -456,6 +469,7 @@ export function renderAuthPage(
 
   function finish() {
     show('step-done');
+    document.body.classList.add('wide');
     $('settings-card').classList.remove('hidden');
     renderSettings();
   }
@@ -526,23 +540,23 @@ export function renderAuthPage(
     const wrap = $('tool-groups');
     wrap.innerHTML = '';
     for (const g of TOOL_CATALOG) {
-      const det = document.createElement('details');
-      det.className = 'tool-group';
-      det.open = false;
-      det.dataset.groupId = g.id;
+      const card = document.createElement('div');
+      card.className = 'tool-group';
+      card.dataset.groupId = g.id;
 
       const onCount = g.tools.filter((t) => enabled.has(t.name)).length;
       const total = g.tools.length;
 
-      const summary = document.createElement('summary');
-      summary.innerHTML =
-        '<span class="tool-group-head">' + escapeHtmlAttr(g.title) +
-        ' <span class="tool-group-count" data-count>(' + onCount + '/' + total + ')</span></span>' +
-        '<span class="tool-group-actions">' +
+      const head = document.createElement('div');
+      head.className = 'tool-group-head';
+      head.innerHTML =
+        '<div class="tool-group-title">' + escapeHtmlAttr(g.title) +
+        ' <span class="tool-group-count" data-count>(' + onCount + '/' + total + ')</span></div>' +
+        '<div class="tool-group-actions">' +
           '<button type="button" data-action="all">All</button>' +
           '<button type="button" data-action="none">None</button>' +
-        '</span>';
-      det.appendChild(summary);
+        '</div>';
+      card.appendChild(head);
 
       const list = document.createElement('div');
       list.className = 'tool-list';
@@ -560,32 +574,32 @@ export function renderAuthPage(
           '</label>';
         list.appendChild(item);
       }
-      det.appendChild(list);
-      wrap.appendChild(det);
+      card.appendChild(list);
+      wrap.appendChild(card);
 
-      summary.querySelector('[data-action="all"]').onclick = (e) => {
+      head.querySelector('[data-action="all"]').onclick = (e) => {
         e.preventDefault();
         if (locked) return;
         list.querySelectorAll('input[type="checkbox"]').forEach((cb) => { cb.checked = true; });
-        updateGroupCount(det);
+        updateGroupCount(card);
         updateSummary();
       };
-      summary.querySelector('[data-action="none"]').onclick = (e) => {
+      head.querySelector('[data-action="none"]').onclick = (e) => {
         e.preventDefault();
         if (locked) return;
         list.querySelectorAll('input[type="checkbox"]').forEach((cb) => { cb.checked = false; });
-        updateGroupCount(det);
+        updateGroupCount(card);
         updateSummary();
       };
-      list.addEventListener('change', () => { updateGroupCount(det); updateSummary(); });
+      list.addEventListener('change', () => { updateGroupCount(card); updateSummary(); });
     }
     updateSummary();
   }
 
-  function updateGroupCount(det) {
-    const total = det.querySelectorAll('input[type="checkbox"]').length;
-    const on = det.querySelectorAll('input[type="checkbox"]:checked').length;
-    det.querySelector('[data-count]').textContent = '(' + on + '/' + total + ')';
+  function updateGroupCount(card) {
+    const total = card.querySelectorAll('input[type="checkbox"]').length;
+    const on = card.querySelectorAll('input[type="checkbox"]:checked').length;
+    card.querySelector('[data-count]').textContent = '(' + on + '/' + total + ')';
   }
 
   function updateSummary() {
@@ -596,28 +610,27 @@ export function renderAuthPage(
 
   $('tool-filter').oninput = (e) => {
     const q = e.target.value.trim().toLowerCase();
-    for (const det of document.querySelectorAll('.tool-group')) {
+    for (const card of document.querySelectorAll('.tool-group')) {
       let any = false;
-      for (const item of det.querySelectorAll('.tool-item')) {
+      for (const item of card.querySelectorAll('.tool-item')) {
         const hit = !q || item.dataset.tool.toLowerCase().includes(q);
         item.classList.toggle('hidden', !hit);
         if (hit) any = true;
       }
-      det.open = !!q && any;
-      det.style.display = any ? '' : 'none';
+      card.classList.toggle('empty', !any);
     }
   };
 
   $('select-all').onclick = () => {
     if (toolsLocked()) return;
     document.querySelectorAll('#tool-groups input[type="checkbox"]').forEach((cb) => { cb.checked = true; });
-    for (const det of document.querySelectorAll('.tool-group')) updateGroupCount(det);
+    for (const card of document.querySelectorAll('.tool-group')) updateGroupCount(card);
     updateSummary();
   };
   $('select-none').onclick = () => {
     if (toolsLocked()) return;
     document.querySelectorAll('#tool-groups input[type="checkbox"]').forEach((cb) => { cb.checked = false; });
-    for (const det of document.querySelectorAll('.tool-group')) updateGroupCount(det);
+    for (const card of document.querySelectorAll('.tool-group')) updateGroupCount(card);
     updateSummary();
   };
 
@@ -698,9 +711,7 @@ export function renderAuthPage(
 
   // Settings-only entry: skip auth flow, go straight to the settings card.
   if (INITIAL_STEP === 'settings') {
-    $('done-check').style.display = 'none';
-    $('done-title').textContent = 'Settings';
-    $('done-lede').textContent = 'Pick which tools the agent sees, then close this tab.';
+    document.body.classList.add('settings-only');
     renderEnvTable();
     finish();
   } else {
