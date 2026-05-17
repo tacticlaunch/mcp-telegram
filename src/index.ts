@@ -6,7 +6,7 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 
 import { listAccounts } from './state.js';
 import { runBrowserLogin } from './auth-browser.js';
-import { registerTools } from './tools.js';
+import { registerTools } from './tools/index.js';
 import { logger } from './logger.js';
 
 dotenvConfig();
