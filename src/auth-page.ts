@@ -264,7 +264,7 @@ export function renderAuthPage(
 <div class="wrap">
 <div class="header">
   ${logoHtml}
-  <p class="brand-line"><b>${brandLink}</b> &middot; local sign-in &middot; <code>127.0.0.1</code></p>
+  <p class="brand-line"><b>${brandLink}</b> &middot; local sign-in</p>
 </div>
 <div class="card">
   <div class="body">
