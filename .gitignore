@@ -35,3 +35,4 @@ mcp_telegram_session
 config/
 .mcp.json
 opencode.json
+Users/

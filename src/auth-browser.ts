@@ -1,5 +1,8 @@
 import { createServer, IncomingMessage, ServerResponse } from 'http';
 import { randomBytes } from 'crypto';
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 import open from 'open';
 
 import { renderAuthPage } from './auth-page.js';
@@ -12,6 +15,22 @@ import {
 } from './telegram.js';
 import { AccountRecord } from './state.js';
 import { logger } from './logger.js';
+
+function loadPkgMeta(): { name: string; version: string; repoUrl?: string } {
+  try {
+    const here = dirname(fileURLToPath(import.meta.url));
+    const pkg = JSON.parse(readFileSync(join(here, '..', 'package.json'), 'utf-8'));
+    let repoUrl: string | undefined = typeof pkg.repository === 'string' ? pkg.repository : pkg.repository?.url;
+    if (repoUrl) {
+      repoUrl = repoUrl.replace(/^git\+/, '').replace(/\.git$/, '');
+    }
+    return { name: pkg.name, version: pkg.version, repoUrl };
+  } catch {
+    return { name: 'mcp-telegram', version: '0.0.0' };
+  }
+}
+
+const pkgMeta = loadPkgMeta();
 
 /**
  * Run a one-shot login flow in the browser.
@@ -75,8 +94,25 @@ export function runBrowserLogin(opts: { timeoutMs?: number } = {}): Promise<Acco
       if (req.method === 'GET' && (url.pathname === '/' || url.pathname === '/authorize')) {
         const accounts = listAccounts().map((a) => ({ id: a.id, phone: a.phone, username: a.username }));
         const creds = credentialsStatus();
+        const env = {
+          TELEGRAM_API_ID: process.env.TELEGRAM_API_ID,
+          TELEGRAM_API_HASH: process.env.TELEGRAM_API_HASH,
+          MCP_TELEGRAM_HOME: process.env.MCP_TELEGRAM_HOME,
+          LOG_LEVEL: process.env.LOG_LEVEL,
+        };
         res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
-        return res.end(renderAuthPage(authId, accounts, creds));
+        return res.end(renderAuthPage(authId, accounts, creds, env, pkgMeta));
+      }
+
+      if (req.method === 'GET' && url.pathname === '/logo.png') {
+        try {
+          const here = dirname(fileURLToPath(import.meta.url));
+          const logo = readFileSync(join(here, '..', 'assets', 'logo.png'));
+          res.writeHead(200, { 'content-type': 'image/png', 'cache-control': 'max-age=3600' });
+          return res.end(logo);
+        } catch {
+          return sendJson(res, 404, { error: 'logo not found' });
+        }
       }
 
       if (req.method !== 'POST') {

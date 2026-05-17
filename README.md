@@ -1,4 +1,8 @@
-# mcp-telegram
+<p align="center">
+  <img src="assets/logo.png" alt="mcp-telegram" width="120" />
+</p>
+
+<h1 align="center">mcp-telegram</h1>
 
 [![npm version](https://img.shields.io/npm/v/mcp-telegram.svg)](https://www.npmjs.com/package/mcp-telegram)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
@@ -149,7 +153,7 @@ If a Telegram session is invalidated server-side (logged out from another device
 ## Development
 
 ```bash
-git clone https://github.com/tacticlaunch/mcp-telegram
+git clone https://github.com/beautyfree/mcp-telegram
 cd mcp-telegram
 npm install
 echo "TELEGRAM_API_ID=...\nTELEGRAM_API_HASH=..." > .env

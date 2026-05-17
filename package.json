@@ -9,11 +9,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tacticlaunch/mcp-telegram.git"
+    "url": "git+https://github.com/beautyfree/mcp-telegram.git"
   },
-  "homepage": "https://github.com/tacticlaunch/mcp-telegram#readme",
+  "homepage": "https://github.com/beautyfree/mcp-telegram#readme",
   "bugs": {
-    "url": "https://github.com/tacticlaunch/mcp-telegram/issues"
+    "url": "https://github.com/beautyfree/mcp-telegram/issues"
   },
   "keywords": [
     "mcp",
@@ -26,7 +26,8 @@
     "ai-agent"
   ],
   "files": [
-    "dist"
+    "dist",
+    "assets"
   ],
   "scripts": {
     "build": "tsc",
