@@ -437,10 +437,34 @@ MCP_TELEGRAM_DISABLE='delete*,ban*,kick*,createChannel,deleteChannel,transferOwn
 
 | Variable | Required | Default | Notes |
 | --- | --- | --- | --- |
-| `TELEGRAM_API_ID` | yes | — | From my.telegram.org/apps |
-| `TELEGRAM_API_HASH` | yes | — | From my.telegram.org/apps |
-| `MCP_TELEGRAM_HOME` | no | `~/.mcp-telegram` | State + per-account session storage |
-| `LOG_LEVEL` | no | `info` | `debug` for verbose stderr |
+| `TELEGRAM_API_ID` | yes | — | From my.telegram.org/apps. If unset, the auth page prompts for it and saves to `state.json`. |
+| `TELEGRAM_API_HASH` | yes | — | Same as above. |
+| `MCP_TELEGRAM_HOME` | no | `~/.mcp-telegram` | State + per-account session storage. |
+| `MCP_TELEGRAM_DOWNLOADS` | no | `$MCP_TELEGRAM_HOME/downloads` | Where `downloadMedia` / `downloadProfilePhoto` save files. |
+| `MCP_TELEGRAM_READONLY` | no | — | Set to `1`/`true`/`yes` to hide every destructive tool. |
+| `MCP_TELEGRAM_TOOLS` | no | — | Strict allowlist. Comma-separated tool names; supports `prefix*` wildcards. If set, anything not matched is hidden. |
+| `MCP_TELEGRAM_DISABLE` | no | — | Blocklist applied after the allowlist. Same syntax. |
+| `LOG_LEVEL` | no | `info` | `debug` for verbose stderr. |
+
+### Choosing which tools the agent sees
+
+The three gating vars stack — `MCP_TELEGRAM_READONLY` → `MCP_TELEGRAM_TOOLS` → `MCP_TELEGRAM_DISABLE`.
+
+```bash
+# Read-only agent — every mutating tool is hidden
+MCP_TELEGRAM_READONLY=1
+
+# Discovery-only — only login + the list/search/get tools
+MCP_TELEGRAM_TOOLS='login,list*,search*,get*,resolveUsername'
+
+# Allow writes but keep destructive ones away from the agent
+MCP_TELEGRAM_DISABLE='delete*,ban*,kick*,createChannel,deleteChannel,transferOwnership,invokeMtproto'
+
+# Specific surface: read + send/edit only
+MCP_TELEGRAM_TOOLS='login,listAccounts,listDialogs,listMessages,searchMessages,searchGlobal,sendMessage,editMessage'
+```
+
+In an MCP client config, drop these into the same `env` block as `TELEGRAM_API_ID`/`TELEGRAM_API_HASH`. To verify, re-open your client — the tools the server advertises are exactly the ones registered after the gates run.
 
 ## Data layout
 
