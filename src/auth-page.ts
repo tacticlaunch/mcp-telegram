@@ -6,7 +6,7 @@ export interface CredentialsHint {
 export interface EnvSnapshot {
   TELEGRAM_API_ID?: string;
   TELEGRAM_API_HASH?: string;
-  MCP_TELEGRAM_HOME?: string;
+  TELEGRAM_AGENT_HOME?: string;
   LOG_LEVEL?: string;
 }
 
@@ -279,7 +279,7 @@ export function renderAuthPage(
   <div class="body">
     <div id="step-creds" class="step">
       <h1>API credentials</h1>
-      <p class="lede">Get them at <a href="https://my.telegram.org/apps" target="_blank" rel="noopener">my.telegram.org/apps</a>. Saved to <code>~/.mcp-telegram</code>.</p>
+      <p class="lede">Get them at <a href="https://my.telegram.org/apps" target="_blank" rel="noopener">my.telegram.org/apps</a>. Saved to <code>~/.telegram-agent</code>.</p>
       <input id="api_id" inputmode="numeric" placeholder="api_id" />
       <input id="api_hash" placeholder="api_hash" />
       <button id="save-creds">Continue</button>
@@ -407,7 +407,7 @@ export function renderAuthPage(
   }
 
   function renderEnvTable() {
-    const keys = ['TELEGRAM_API_ID', 'TELEGRAM_API_HASH', 'MCP_TELEGRAM_HOME', 'LOG_LEVEL'];
+    const keys = ['TELEGRAM_API_ID', 'TELEGRAM_API_HASH', 'TELEGRAM_AGENT_HOME', 'LOG_LEVEL'];
     $('env-table').innerHTML = keys.map((k) => {
       const v = env[k];
       const val = v == null

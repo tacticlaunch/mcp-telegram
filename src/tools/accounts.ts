@@ -85,7 +85,7 @@ export function register({ reg, regWrite }: ToolContext): void {
       description:
         'Open a local browser tab where the user can toggle read-only mode and edit ' +
         'the tool allowlist / blocklist. Resolves when the user closes the tab. ' +
-        'Changes are persisted to ~/.mcp-telegram/state.json; the MCP client must ' +
+        'Changes are persisted to ~/.telegram-agent/state.json; the MCP client must ' +
         'be restarted to pick them up. Env vars (MCP_TELEGRAM_READONLY / TOOLS / DISABLE) ' +
         'override stored values and are shown as locked in the UI.',
       inputSchema: {},

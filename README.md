@@ -20,7 +20,7 @@ A [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server that co
 **Use it to:** read dialogs and search messages globally · send/edit/forward/react/poll · download media and transcribe voice notes · moderate channels (ban/restrict/promote, invite links, slow-mode, admin log, forum topics) · manage stories, contacts, drafts, notifications, folders, privacy · or fall through to the raw MTProto bridge for anything else. All against a single signed-in user account—no bot required.
 
 > [!WARNING]
-> This server signs in as a real Telegram user (not a bot). Sessions live in `~/.mcp-telegram/`. Treat that directory like a password.
+> This server signs in as a real Telegram user (not a bot). Sessions live in `~/.telegram-agent/`. Treat that directory like a password.
 
 ## Prerequisites
 
@@ -31,7 +31,7 @@ A [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server that co
 
 This package is the **MCP server** — every tool schema (~12,700 tokens) sits in your agent's context on every turn. Good for any MCP client and for hosted runtimes that can't shell out.
 
-If your agent is **Claude Code / Codex CLI / Cursor / Gemini CLI / Cline / Windsurf**, there's a [companion package — `telegram-skill`](https://github.com/beautyfree/telegram-skill) — that ships the same Telegram surface as a [universal agent skill](https://code.claude.com/docs/en/skills). The agent only loads the skill instructions when your prompt mentions Telegram — **~50× lower context cost** in idle. Standalone (no MCP server in the loop), but uses the same `~/.mcp-telegram/` session store as this package — sign in once, use either or both.
+If your agent is **Claude Code / Codex CLI / Cursor / Gemini CLI / Cline / Windsurf**, there's a [companion package — `telegram-skill`](https://github.com/beautyfree/telegram-skill) — that ships the same Telegram surface as a [universal agent skill](https://code.claude.com/docs/en/skills). The agent only loads the skill instructions when your prompt mentions Telegram — **~50× lower context cost** in idle. Standalone (no MCP server in the loop), but uses the same `~/.telegram-agent/` session store as this package — sign in once, use either or both.
 
 ```bash
 npm i -g telegram-skill
@@ -172,7 +172,7 @@ To add another account, ask the agent to call `login` again.
 <details>
 <summary><b>Sessions (local)</b> (4)</summary>
 
-These are local-only: they manage which Telegram sessions live in `~/.mcp-telegram/` and the settings UI. No Telegram API call beyond the sign-in flow itself.
+These are local-only: they manage which Telegram sessions live in `~/.telegram-agent/` and the settings UI. No Telegram API call beyond the sign-in flow itself.
 
 | Tool | What it does |
 | --- | --- |
@@ -475,8 +475,8 @@ MCP_TELEGRAM_DISABLE='delete*,ban*,kick*,create_channel,delete_channel,transfer_
 | --- | --- | --- | --- |
 | `TELEGRAM_API_ID` | yes | — | From my.telegram.org/apps. If unset, the auth page prompts for it and saves to `state.json`. |
 | `TELEGRAM_API_HASH` | yes | — | Same as above. |
-| `MCP_TELEGRAM_HOME` | no | `~/.mcp-telegram` | State + per-account session storage. |
-| `MCP_TELEGRAM_DOWNLOADS` | no | `$MCP_TELEGRAM_HOME/downloads` | Where `download_media` / `download_profile_photo` save files. |
+| `TELEGRAM_AGENT_HOME` | no | `~/.telegram-agent` | State + per-account session storage. Legacy `MCP_TELEGRAM_HOME` still accepted. If only `~/.mcp-telegram` exists from a previous install, it's used automatically. |
+| `TELEGRAM_AGENT_DOWNLOADS` | no | `$TELEGRAM_AGENT_HOME/downloads` | Where `download_media` / `download_profile_photo` save files. Legacy `MCP_TELEGRAM_DOWNLOADS` still accepted. |
 | `MCP_TELEGRAM_READONLY` | no | — | Set to `1`/`true`/`yes` to hide every destructive tool. |
 | `MCP_TELEGRAM_TOOLS` | no | — | Strict allowlist. Comma-separated tool names; supports `prefix*` wildcards. If set, anything not matched is hidden. |
 | `MCP_TELEGRAM_DISABLE` | no | — | Blocklist applied after the allowlist. Same syntax. |
@@ -505,7 +505,7 @@ In an MCP client config, drop these into the same `env` block as `TELEGRAM_API_I
 ## Data layout
 
 ```
-~/.mcp-telegram/
+~/.telegram-agent/
 ├── state.json          known accounts (no secrets in here)
 └── sessions/
     └── <account_id>/   per-account MTProto session
@@ -531,7 +531,7 @@ src/
 ├── telegram.ts        MTProto client + login state machine
 ├── auth-browser.ts    ephemeral HTTP server that drives the browser flow
 ├── auth-page.ts       inline HTML for the auth page
-├── state.ts           persistent state in ~/.mcp-telegram/
+├── state.ts           persistent state in ~/.telegram-agent/
 └── logger.ts
 ```
 

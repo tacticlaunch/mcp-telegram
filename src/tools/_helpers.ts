@@ -9,9 +9,23 @@ import { randomBytes } from 'crypto';
 import { listAccounts, getAccount } from '../state.js';
 import { clientForAccount, TelegramAuthError } from '../telegram.js';
 
-export const downloadsDir =
-  process.env.MCP_TELEGRAM_DOWNLOADS ||
-  join(process.env.MCP_TELEGRAM_HOME || join(homedir(), '.mcp-telegram'), 'downloads');
+// Downloads land under the shared Telegram-agent home, unless explicitly
+// overridden via MCP_TELEGRAM_DOWNLOADS (legacy) or TELEGRAM_AGENT_DOWNLOADS.
+// Default resolves through the same priority as state.ts: env override →
+// new `~/.telegram-agent/` → legacy `~/.mcp-telegram/` fallback.
+function resolveDownloadsDir(): string {
+  const override = process.env.TELEGRAM_AGENT_DOWNLOADS || process.env.MCP_TELEGRAM_DOWNLOADS;
+  if (override) return override;
+  const homeOverride = process.env.TELEGRAM_AGENT_HOME || process.env.MCP_TELEGRAM_HOME;
+  if (homeOverride) return join(homeOverride, 'downloads');
+  const home = homedir();
+  const next = join(home, '.telegram-agent');
+  const legacy = join(home, '.mcp-telegram');
+  const base = !existsSync(next) && existsSync(legacy) ? legacy : next;
+  return join(base, 'downloads');
+}
+
+export const downloadsDir = resolveDownloadsDir();
 
 export function ensureDownloadsDir(): string {
   if (!existsSync(downloadsDir)) mkdirSync(downloadsDir, { recursive: true });

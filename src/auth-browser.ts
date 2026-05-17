@@ -178,7 +178,7 @@ function runBrowserPage(mode: PageMode, opts: { timeoutMs?: number }): Promise<A
         const env = {
           TELEGRAM_API_ID: process.env.TELEGRAM_API_ID,
           TELEGRAM_API_HASH: process.env.TELEGRAM_API_HASH,
-          MCP_TELEGRAM_HOME: process.env.MCP_TELEGRAM_HOME,
+          TELEGRAM_AGENT_HOME: process.env.TELEGRAM_AGENT_HOME ?? process.env.MCP_TELEGRAM_HOME,
           LOG_LEVEL: process.env.LOG_LEVEL,
         };
         res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
