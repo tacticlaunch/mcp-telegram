@@ -152,7 +152,7 @@ Installs the `telegram` agent-skill (universal [SKILL.md format](https://code.cl
 
 - `~/.claude/skills/telegram/` — Claude Code
 - `~/.agents/skills/telegram/` — Codex CLI (per the [Agent Skills spec](https://developers.openai.com/codex/skills))
-- `./.cursor/rules/telegram.mdc` — Cursor (adapter generated from the same SKILL.md)
+- `~/.cursor/plugins/local/telegram/` — Cursor (native [plugin format](https://cursor.com/docs/plugins) with bundled `skills/`, `mcp.json`, and manifest)
 
 Then in the agent: *"summarize @hackernews from today"*, *"tag my Saved Messages by topic"*, *"send hello to @friend"* — the agent reads the skill, shells out to `mcp-tg`, and parses JSON. No MCP server running.
 

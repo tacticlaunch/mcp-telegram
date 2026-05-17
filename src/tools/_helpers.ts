@@ -162,17 +162,25 @@ export const MessageFilterEnum = z.enum(
 
 export const ParseMode = z.enum(['plain', 'markdown', 'html']).optional();
 
+/** Extract a numeric id string from a TL Peer object (PeerUser/PeerChat/PeerChannel). */
+function peerIdString(p: any): string | undefined {
+  if (!p) return undefined;
+  return (
+    p.userId?.toString?.() ??
+    p.chatId?.toString?.() ??
+    p.channelId?.toString?.() ??
+    undefined
+  );
+}
+
 export function serializeMessage(m: any) {
   return {
     id: m.id,
     date: m.date,
     text: m.message ?? '',
     out: m.out,
-    fromId: m.fromId?.toString?.(),
-    peerId:
-      m.peerId?.userId?.toString?.() ??
-      m.peerId?.chatId?.toString?.() ??
-      m.peerId?.channelId?.toString?.(),
+    fromId: peerIdString(m.fromId),
+    peerId: peerIdString(m.peerId),
     replyTo: m.replyTo?.replyToMsgId,
     mediaType: m.media?.className,
     views: m.views,

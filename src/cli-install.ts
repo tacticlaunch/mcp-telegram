@@ -45,38 +45,46 @@ interface ClientTarget {
   dest: string | null;
   /** A heuristic path whose existence implies the client is installed. */
   detectPath: string;
-  /** If true, write as Cursor `.mdc` adapter instead of copying SKILL.md verbatim. */
-  cursor?: boolean;
+  /** Layout to write at `dest`:
+   *  - `'skill'`  : copy `skills/telegram/` verbatim (Claude Code, Codex CLI)
+   *  - `'cursor'` : wrap as a Cursor plugin (`.cursor-plugin/plugin.json` +
+   *                 `skills/telegram/`), Cursor's native plugin format.
+   */
+  layout: 'skill' | 'cursor';
 }
 
 function detectAll(): ClientTarget[] {
   const home = homedir();
   const claudeBase = join(home, '.claude');
   const codexBase = join(home, '.agents');
-  const cursorProjBase = join(process.cwd(), '.cursor', 'rules');
+  const cursorBase = join(home, '.cursor');
 
   return [
     {
       id: 'claude',
       label: 'Claude Code',
       detectPath: claudeBase,
-      dest: existsSync(claudeBase) ? join(claudeBase, 'skills', SKILL_NAME) : null,
+      // Skills go under ~/.claude/skills/<name>
+      dest: join(claudeBase, 'skills', SKILL_NAME),
+      layout: 'skill',
     },
     {
       id: 'codex',
       label: 'Codex CLI',
       detectPath: codexBase,
-      // Codex skills dir per the spec is ~/.agents/skills/<name>
-      dest: existsSync(codexBase) ? join(codexBase, 'skills', SKILL_NAME) : join(codexBase, 'skills', SKILL_NAME),
+      // Codex skills dir per the Agent Skills spec is ~/.agents/skills/<name>
+      dest: join(codexBase, 'skills', SKILL_NAME),
+      layout: 'skill',
     },
     {
       id: 'cursor',
-      label: 'Cursor (project rules)',
-      detectPath: join(process.cwd(), '.cursor'),
-      // For Cursor we always target the current project — global rules
-      // aren't a stable concept yet.
-      dest: cursorProjBase,
-      cursor: true,
+      label: 'Cursor',
+      // Cursor's native plugin system: https://cursor.com/docs/plugins
+      // Local plugins live under ~/.cursor/plugins/local/<name> and may
+      // bundle skills/, rules/, mcp.json, etc.
+      detectPath: cursorBase,
+      dest: join(cursorBase, 'plugins', 'local', SKILL_NAME),
+      layout: 'cursor',
     },
   ];
 }
@@ -117,37 +125,60 @@ function readSkillMd(path: string): { name: string; description: string; body: s
   };
 }
 
-function writeCursorAdapter(dest: string, src: string): void {
+function writeCursorPlugin(dest: string, src: string): number {
+  // Cursor's native plugin layout (https://cursor.com/docs/plugins):
+  //   <plugin-root>/
+  //   ├── .cursor-plugin/plugin.json   (manifest, only `name` required)
+  //   ├── skills/<skill>/SKILL.md       (universal SKILL.md format)
+  //   └── mcp.json                      (optional MCP wiring)
+  //
+  // We bundle the skill verbatim plus an mcp.json that points to the same
+  // npm package — so users get both the lazy-loaded skill and the option
+  // to enable the MCP server inside Cursor without extra config.
   mkdirSync(dest, { recursive: true });
-  const skill = readSkillMd(join(src, 'SKILL.md'));
-  // Cursor's frontmatter uses different keys; description-only rules
-  // activate when the agent decides they're relevant (Agent Requested
-  // mode). globs left empty, alwaysApply: false → fully lazy.
-  const mdc =
-    `---\n` +
-    `description: ${skill.description}\n` +
-    `globs: \n` +
-    `alwaysApply: false\n` +
-    `---\n\n` +
-    skill.body +
-    '\n\n' +
-    `(Reference files live in your package install; consult mcp-telegram repo for full recipes.)\n`;
-  writeFileSync(join(dest, `${skill.name}.mdc`), mdc);
+  mkdirSync(join(dest, '.cursor-plugin'), { recursive: true });
+  const manifest = {
+    name: SKILL_NAME,
+    version: '1.0.0',
+    description:
+      'Operate a real Telegram user account from Cursor — read dialogs, search globally, send/edit/react, tag Saved Messages, moderate channels. Ships as a lazy-loaded agent skill plus an optional MCP server.',
+  };
+  writeFileSync(
+    join(dest, '.cursor-plugin', 'plugin.json'),
+    JSON.stringify(manifest, null, 2) + '\n'
+  );
+  const mcpJson = {
+    mcpServers: {
+      [SKILL_NAME]: {
+        command: 'npx',
+        args: ['-y', 'mcp-telegram'],
+      },
+    },
+  };
+  writeFileSync(join(dest, 'mcp.json'), JSON.stringify(mcpJson, null, 2) + '\n');
+  // Skill bundle goes under skills/<name>/ inside the plugin root.
+  const skillDest = join(dest, 'skills', SKILL_NAME);
+  const n = copyDir(src, skillDest);
+  return n + 2; // +manifest +mcp.json
+}
+
+function isInstalledAt(t: ClientTarget): boolean {
+  if (!t.dest) return false;
+  if (t.layout === 'cursor') return existsSync(join(t.dest, '.cursor-plugin', 'plugin.json'));
+  return existsSync(join(t.dest, 'SKILL.md'));
 }
 
 export async function runInstall(target?: string): Promise<void> {
   const src = skillSourceDir();
   const all = detectAll();
   const selected: ClientTarget[] =
-    !target || target === 'all'
-      ? all.filter((c) => c.dest !== null || c.id === 'codex') // codex dir created on demand
-      : all.filter((c) => c.id === target);
+    !target || target === 'all' ? all : all.filter((c) => c.id === target);
 
   if (selected.length === 0) {
     process.stderr.write(
       JSON.stringify({
         ok: false,
-        error: `No target client matched. Detected: ${detectedSummary(all)}`,
+        error: `Unknown target '${target}'. Valid: ${all.map((c) => c.id).join(', ')}, all.`,
       }) + '\n'
     );
     process.exit(1);
@@ -155,20 +186,17 @@ export async function runInstall(target?: string): Promise<void> {
 
   const report: any[] = [];
   for (const t of selected) {
-    if (!t.dest) {
+    // Skip silently when targeting "all" and the client isn't installed —
+    // but always run when targeted explicitly so the user can pre-create
+    // the directory by installing the client later.
+    if (!target && !existsSync(t.detectPath)) {
       report.push({ client: t.id, status: 'skipped', reason: `not detected at ${t.detectPath}` });
       continue;
     }
     try {
-      if (t.cursor) {
-        writeCursorAdapter(t.dest, src);
-        report.push({ client: t.id, status: 'installed', dest: t.dest, mode: 'mdc adapter' });
-      } else {
-        // Clean previous install to avoid stale files.
-        if (existsSync(t.dest)) rmSync(t.dest, { recursive: true, force: true });
-        const n = copyDir(src, t.dest);
-        report.push({ client: t.id, status: 'installed', dest: t.dest, files: n });
-      }
+      if (existsSync(t.dest!)) rmSync(t.dest!, { recursive: true, force: true });
+      const n = t.layout === 'cursor' ? writeCursorPlugin(t.dest!, src) : copyDir(src, t.dest!);
+      report.push({ client: t.id, status: 'installed', dest: t.dest, files: n, layout: t.layout });
     } catch (err) {
       report.push({ client: t.id, status: 'error', error: (err as Error).message });
     }
@@ -182,16 +210,6 @@ export async function runUninstall(target?: string): Promise<void> {
     !target || target === 'all' ? all : all.filter((c) => c.id === target);
   const report: any[] = [];
   for (const t of selected) {
-    if (t.cursor) {
-      const mdc = join(t.dest!, `${SKILL_NAME}.mdc`);
-      if (existsSync(mdc)) {
-        rmSync(mdc, { force: true });
-        report.push({ client: t.id, status: 'removed', path: mdc });
-      } else {
-        report.push({ client: t.id, status: 'absent' });
-      }
-      continue;
-    }
     if (t.dest && existsSync(t.dest)) {
       rmSync(t.dest, { recursive: true, force: true });
       report.push({ client: t.id, status: 'removed', path: t.dest });
@@ -210,13 +228,8 @@ export async function runDoctor(): Promise<void> {
     detected: existsSync(t.detectPath),
     detectPath: t.detectPath,
     dest: t.dest,
-    installed: t.cursor
-      ? t.dest
-        ? existsSync(join(t.dest, `${SKILL_NAME}.mdc`))
-        : false
-      : t.dest
-        ? existsSync(t.dest)
-        : false,
+    layout: t.layout,
+    installed: isInstalledAt(t),
   }));
   process.stdout.write(JSON.stringify({ ok: true, clients: out }, null, 2) + '\n');
 }
