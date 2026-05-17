@@ -4,7 +4,13 @@ import { computeCheck } from 'telegram/Password.js';
 import { mkdirSync } from 'fs';
 import { join } from 'path';
 
-import { sessionsDir, AccountRecord, getAccount, upsertAccount, revokeTokensForAccount, deleteAccount } from './state.js';
+import {
+  sessionsDir,
+  AccountRecord,
+  getAccount,
+  upsertAccount,
+  deleteAccount,
+} from './state.js';
 import { logger } from './logger.js';
 
 function apiCreds(): { apiId: number; apiHash: string } {
@@ -24,6 +30,13 @@ function sessionPathFor(accountId: string): string {
 
 const clientCache = new Map<string, TelegramClient>();
 
+export class TelegramAuthError extends Error {
+  constructor(public accountId: string, message: string) {
+    super(message);
+    this.name = 'TelegramAuthError';
+  }
+}
+
 export async function clientForAccount(accountId: string): Promise<TelegramClient> {
   const cached = clientCache.get(accountId);
   if (cached) return cached;
@@ -35,17 +48,10 @@ export async function clientForAccount(accountId: string): Promise<TelegramClien
 
   if (!(await client.isUserAuthorized())) {
     clientCache.delete(accountId);
-    throw new TelegramAuthError(accountId, 'Telegram session is not authorized');
+    throw new TelegramAuthError(accountId, `Telegram session expired for account ${accountId}`);
   }
   clientCache.set(accountId, client);
   return client;
-}
-
-export class TelegramAuthError extends Error {
-  constructor(public accountId: string, message: string) {
-    super(message);
-    this.name = 'TelegramAuthError';
-  }
 }
 
 export async function logoutAccount(accountId: string): Promise<void> {
@@ -56,49 +62,38 @@ export async function logoutAccount(accountId: string): Promise<void> {
     logger.warn(`Logout RPC failed for ${accountId}: ${(err as Error).message}`);
   }
   clientCache.delete(accountId);
-  revokeTokensForAccount(accountId);
   deleteAccount(accountId);
 }
 
 /**
- * Login flow — state machine across HTTP requests.
- *
- * Each pending login is keyed by `auth_id` (opaque) and lives only in
- * memory. Once authorized, an `AccountRecord` is persisted and the
- * client is cached under that account id.
+ * In-memory login state machine — one entry per browser tab driving the
+ * auth flow.
  */
-
 interface PendingLogin {
   phone: string;
   client: TelegramClient;
   phoneCodeHash?: string;
-  awaitingPassword?: boolean;
   passwordSrp?: Api.account.Password;
-  finished?: boolean;
-  accountId?: string;
 }
 
 const pending = new Map<string, PendingLogin>();
 
 export async function loginStart(authId: string, phone: string): Promise<void> {
   const { apiId, apiHash } = apiCreds();
-  // Temporary in-memory session — promoted to disk after auth.
   const session = new StoreSession(join(sessionsDir, `_pending_${authId}`));
   const client = new TelegramClient(session, apiId, apiHash, { connectionRetries: 3 });
   await client.connect();
-
   const result = await client.sendCode({ apiId, apiHash }, phone);
   pending.set(authId, { phone, client, phoneCodeHash: result.phoneCodeHash });
 }
 
 export type LoginCodeResult =
-  | { status: 'ok'; accountId: string }
+  | { status: 'ok'; account: AccountRecord }
   | { status: 'password_needed' };
 
 export async function loginSubmitCode(authId: string, code: string): Promise<LoginCodeResult> {
   const entry = pending.get(authId);
   if (!entry || !entry.phoneCodeHash) throw new Error('Login session not found');
-
   try {
     await entry.client.invoke(
       new Api.auth.SignIn({
@@ -107,67 +102,52 @@ export async function loginSubmitCode(authId: string, code: string): Promise<Log
         phoneCode: code,
       })
     );
-    const accountId = await finalizeLogin(entry);
+    const account = await finalizeLogin(authId, entry);
     pending.delete(authId);
-    return { status: 'ok', accountId };
+    return { status: 'ok', account };
   } catch (err) {
     if ((err as any).errorMessage === 'SESSION_PASSWORD_NEEDED') {
-      const passSrp = await entry.client.invoke(new Api.account.GetPassword());
-      entry.awaitingPassword = true;
-      entry.passwordSrp = passSrp;
+      entry.passwordSrp = await entry.client.invoke(new Api.account.GetPassword());
       return { status: 'password_needed' };
     }
     throw err;
   }
 }
 
-export async function loginSubmitPassword(authId: string, password: string): Promise<{ accountId: string }> {
+export async function loginSubmitPassword(authId: string, password: string): Promise<{ account: AccountRecord }> {
   const entry = pending.get(authId);
   if (!entry || !entry.passwordSrp) throw new Error('No password challenge for this session');
-
   const passSrpCheck = await computeCheck(entry.passwordSrp, password);
   await entry.client.invoke(new Api.auth.CheckPassword({ password: passSrpCheck }));
-  const accountId = await finalizeLogin(entry);
+  const account = await finalizeLogin(authId, entry);
   pending.delete(authId);
-  return { accountId };
+  return { account };
 }
 
-async function finalizeLogin(entry: PendingLogin): Promise<string> {
+async function finalizeLogin(authId: string, entry: PendingLogin): Promise<AccountRecord> {
   const me = await entry.client.getMe();
   const telegramId = (me as any)?.id?.toString();
   const username = (me as any)?.username as string | undefined;
   const accountId = telegramId || `acct_${Date.now()}`;
 
-  // Migrate session from `_pending_<authId>` to permanent dir
+  // Promote the pending session to its permanent location.
   const finalDir = sessionPathFor(accountId);
   const { apiId, apiHash } = apiCreds();
   const finalSession = new StoreSession(finalDir);
-  // copy session string
-  const sessionString = (entry.client.session as any).save?.() ?? (entry.client.session as StoreSession).save();
   await finalSession.load();
-  (finalSession as any).setDC?.(
-    (entry.client.session as any).dcId,
-    (entry.client.session as any).serverAddress,
-    (entry.client.session as any).port
-  );
-  (finalSession as any).setAuthKey?.((entry.client.session as any).authKey);
+  const src = entry.client.session as any;
+  (finalSession as any).setDC?.(src.dcId, src.serverAddress, src.port);
+  (finalSession as any).setAuthKey?.(src.authKey);
   await finalSession.save();
-  void sessionString;
 
-  // Replace cached client
   await entry.client.disconnect();
+
   const promoted = new TelegramClient(finalSession, apiId, apiHash, { connectionRetries: 5 });
   await promoted.connect();
   clientCache.set(accountId, promoted);
 
-  upsertAccount({
-    id: accountId,
-    phone: entry.phone,
-    username,
-    telegram_id: telegramId,
-  });
-
-  return accountId;
+  void authId; // pending dir is left on disk; harmless, can be GC'd later
+  return upsertAccount({ id: accountId, phone: entry.phone, username, telegram_id: telegramId });
 }
 
 export function getAccountSafe(id: string): AccountRecord | undefined {

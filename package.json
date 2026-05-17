@@ -39,12 +39,11 @@
     "@modelcontextprotocol/sdk": "^1.29.0",
     "big-integer": "^1.6.52",
     "dotenv": "^16.3.1",
-    "express": "^5.2.1",
+    "open": "^11.0.0",
     "telegram": "^2.19.10",
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@types/express": "^5.0.6",
     "@types/node": "^20.10.5",
     "@typescript-eslint/eslint-plugin": "^6.15.0",
     "@typescript-eslint/parser": "^6.15.0",

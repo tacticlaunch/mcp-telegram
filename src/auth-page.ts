@@ -95,7 +95,7 @@ export function renderAuthPage(authSessionId: string, accounts: { id: string; ph
     <div class="success">
       <div class="check">&check;</div>
       <h1>Authorized</h1>
-      <p class="lede">Redirecting back to your agent…</p>
+      <p class="lede">You can close this tab and return to your agent.</p>
     </div>
   </div>
 
@@ -133,8 +133,7 @@ export function renderAuthPage(authSessionId: string, accounts: { id: string; ph
   async function pickExisting(accountId) {
     const r = await fetch('/authorize/use-account', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ auth_id: AUTH_ID, account_id: accountId }) });
     if (!r.ok) { alert('Failed to use account'); return; }
-    const { redirect } = await r.json();
-    finish(redirect);
+    finish();
   }
 
   $('add-new').onclick = () => show('step-phone');
@@ -167,7 +166,7 @@ export function renderAuthPage(authSessionId: string, accounts: { id: string; ph
       const body = await r.json();
       if (!r.ok) return showErr('err-code', body.error || 'Failed');
       if (body.status === 'password_needed') return show('step-password');
-      if (body.redirect) finish(body.redirect);
+      finish();
     } finally {
       $('submit-code').disabled = false;
     }
@@ -182,15 +181,14 @@ export function renderAuthPage(authSessionId: string, accounts: { id: string; ph
       const r = await fetch('/authorize/login-password', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ auth_id: AUTH_ID, password }) });
       const body = await r.json();
       if (!r.ok) return showErr('err-password', body.error || 'Failed');
-      if (body.redirect) finish(body.redirect);
+      finish();
     } finally {
       $('submit-password').disabled = false;
     }
   };
 
-  function finish(redirect) {
+  function finish() {
     show('step-done');
-    setTimeout(() => { window.location = redirect; }, 600);
   }
 
   renderAccounts();
