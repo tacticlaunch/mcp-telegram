@@ -71,6 +71,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
     'revokeInviteLink',
     {
+      annotations: {"destructiveHint":true,"openWorldHint":true},
       title: 'Revoke an invite link',
       description: 'Permanently revoke a previously generated invite link.',
       inputSchema: {

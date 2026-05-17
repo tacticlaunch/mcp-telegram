@@ -97,6 +97,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
     'closePoll',
     {
+      annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Close an active poll',
       description: 'Finalize a poll so no further votes are accepted.',
       inputSchema: { accountId: z.string().optional(), peer: z.string(), messageId: z.number().int() },

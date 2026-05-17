@@ -8,6 +8,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
     'saveDraft',
     {
+      annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Save a message draft',
       description: 'Save a draft for a dialog. Pass empty `text` to clear it.',
       inputSchema: {
@@ -40,6 +41,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
     'clearDraft',
     {
+      annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Clear a draft',
       description: 'Equivalent to `saveDraft` with an empty text.',
       inputSchema: { accountId: z.string().optional(), peer: z.string() },

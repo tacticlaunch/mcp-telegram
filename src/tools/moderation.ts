@@ -72,6 +72,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
     'banUser',
     {
+      annotations: {"destructiveHint":true,"openWorldHint":true},
       title: 'Ban a user from a channel/supergroup',
       description: 'Fully ban a user. Pass `untilDate` (unix seconds) to time-limit the ban; default is forever.',
       inputSchema: {
@@ -100,6 +101,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
     'unbanUser',
     {
+      annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Lift a ban / restriction',
       description: 'Remove all restrictions for a user.',
       inputSchema: { accountId: z.string().optional(), peer: z.string(), user: z.string() },
@@ -123,6 +125,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
     'restrictUser',
     {
+      annotations: {"destructiveHint":true,"openWorldHint":true},
       title: 'Restrict a user with a custom rights mask',
       description: 'Set specific restrictions. `true` for a field means the user CANNOT do that action.',
       inputSchema: {
@@ -151,6 +154,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
     'promoteAdmin',
     {
+      annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Promote a user to admin',
       description: 'Grant admin rights. Pass only the fields you want enabled; omitted fields default to false.',
       inputSchema: {
@@ -181,6 +185,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
     'demoteAdmin',
     {
+      annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Strip admin rights',
       description: 'Remove all admin rights from a user.',
       inputSchema: { accountId: z.string().optional(), peer: z.string(), user: z.string() },
@@ -205,6 +210,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
     'inviteUser',
     {
+      annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Invite a user to a channel/supergroup',
       description: 'Add a user (or list of users) to a channel or supergroup.',
       inputSchema: {
@@ -305,6 +311,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
     'deleteUserHistory',
     {
+      annotations: {"destructiveHint":true,"openWorldHint":true},
       title: 'Delete all messages by a user in a chat',
       description: 'Wipe every message a given user has posted in the channel/supergroup.',
       inputSchema: { accountId: z.string().optional(), peer: z.string(), user: z.string() },
@@ -324,6 +331,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
     'kickParticipant',
     {
+      annotations: {"destructiveHint":true,"openWorldHint":true},
       title: 'Kick a participant',
       description: 'Remove a user from a chat/channel. Requires admin rights.',
       inputSchema: { accountId: z.string().optional(), peer: z.string(), user: z.string() },

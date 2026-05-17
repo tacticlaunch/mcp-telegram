@@ -50,6 +50,7 @@ export function register({ regWrite }: ToolContext): void {
   regWrite(
     'editMessage',
     {
+      annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Edit a message',
       description: 'Edit the text of a previously sent message.',
       inputSchema: {
@@ -77,6 +78,7 @@ export function register({ regWrite }: ToolContext): void {
   regWrite(
     'deleteMessages',
     {
+      annotations: {"destructiveHint":true,"openWorldHint":true},
       title: 'Delete messages',
       description: 'Delete messages by id. `revoke` (default true) deletes for all participants where possible.',
       inputSchema: {
@@ -124,6 +126,7 @@ export function register({ regWrite }: ToolContext): void {
   regWrite(
     'pinMessage',
     {
+      annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Pin a message',
       description: 'Pin a message in the dialog.',
       inputSchema: {
@@ -148,6 +151,7 @@ export function register({ regWrite }: ToolContext): void {
   regWrite(
     'unpinMessage',
     {
+      annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Unpin a message',
       description: 'Unpin a specific message, or pass no id to unpin everything in the dialog.',
       inputSchema: {

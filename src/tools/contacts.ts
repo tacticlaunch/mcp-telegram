@@ -31,6 +31,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
     'addContact',
     {
+      annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Add a contact',
       description: 'Add a user to your contacts.',
       inputSchema: {
@@ -62,6 +63,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
     'deleteContact',
     {
+      annotations: {"destructiveHint":true,"openWorldHint":true},
       title: 'Delete contacts',
       description: 'Remove one or more users from the contact book.',
       inputSchema: {

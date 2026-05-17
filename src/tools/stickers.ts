@@ -24,6 +24,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
     'installStickerSet',
     {
+      annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Install a sticker set',
       description: 'Install a sticker set by its short name (e.g. "AnimatedEmojies").',
       inputSchema: {
@@ -48,6 +49,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
     'addRecentSticker',
     {
+      annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Add a sticker to recent',
       description: 'Pin a sticker to the recently used list. Use `unsave: true` to remove it.',
       inputSchema: {

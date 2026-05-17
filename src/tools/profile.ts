@@ -8,6 +8,7 @@ export function register({ regWrite }: ToolContext): void {
   regWrite(
     'updateProfile',
     {
+      annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Update own profile (name, bio)',
       description: 'Change own first name, last name, or about. Omitted fields are left untouched.',
       inputSchema: {
@@ -34,6 +35,7 @@ export function register({ regWrite }: ToolContext): void {
   regWrite(
     'updateMyUsername',
     {
+      annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Update own @username',
       description: 'Set or clear (empty string) own public username.',
       inputSchema: { accountId: z.string().optional(), username: z.string() },
@@ -49,6 +51,7 @@ export function register({ regWrite }: ToolContext): void {
   regWrite(
     'setBirthday',
     {
+      annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Set birthday on profile',
       description: 'Set the account birthday. Year is optional.',
       inputSchema: {
@@ -73,6 +76,7 @@ export function register({ regWrite }: ToolContext): void {
   regWrite(
     'setProfilePhoto',
     {
+      annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Set own profile photo',
       description: 'Upload a new profile photo from a local path or URL.',
       inputSchema: { accountId: z.string().optional(), path: z.string() },

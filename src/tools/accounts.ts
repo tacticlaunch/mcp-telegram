@@ -10,6 +10,8 @@ export function register({ reg, regWrite }: ToolContext): void {
   reg(
     'listAccounts',
     {
+      // No openWorldHint — purely reads local state.
+      annotations: { readOnlyHint: true },
       title: 'List Telegram accounts',
       description: 'Return the Telegram accounts currently signed in on this machine.',
       inputSchema: {},
@@ -23,6 +25,8 @@ export function register({ reg, regWrite }: ToolContext): void {
   reg(
     'login',
     {
+      // Adds a session — neither read-only nor destructive, but touches external services.
+      annotations: { openWorldHint: true },
       title: 'Sign in to Telegram',
       description:
         'Open a browser window where the user signs in to Telegram (phone → code → 2FA). ' +
@@ -45,6 +49,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
     'logout',
     {
+      annotations: { destructiveHint: true, openWorldHint: true },
       title: 'Sign out of Telegram',
       description: 'Drop the local session for an account and revoke it on the Telegram side.',
       inputSchema: { accountId: z.string().describe('Account id (from listAccounts)') },

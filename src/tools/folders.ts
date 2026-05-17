@@ -65,6 +65,7 @@ export function register({ regWrite }: ToolContext): void {
   regWrite(
     'editFolder',
     {
+      annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Edit a dialog folder',
       description: 'Replace the rules of an existing folder. `id` is required.',
       inputSchema: { id: z.number().int(), ...FolderFields },
@@ -81,6 +82,7 @@ export function register({ regWrite }: ToolContext): void {
   regWrite(
     'deleteFolder',
     {
+      annotations: {"destructiveHint":true,"openWorldHint":true},
       title: 'Delete a dialog folder',
       description: 'Remove a folder by id.',
       inputSchema: { accountId: z.string().optional(), id: z.number().int() },
@@ -96,6 +98,7 @@ export function register({ regWrite }: ToolContext): void {
   regWrite(
     'reorderFolders',
     {
+      annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Reorder dialog folders',
       description: 'Set the display order of folders by passing the list of ids in the desired sequence.',
       inputSchema: {

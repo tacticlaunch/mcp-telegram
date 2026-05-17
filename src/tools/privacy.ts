@@ -39,6 +39,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
     'blockUser',
     {
+      annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Block a user',
       description: 'Block a user from contacting you.',
       inputSchema: { accountId: z.string().optional(), user: z.string() },
@@ -55,6 +56,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
     'unblockUser',
     {
+      annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Unblock a user',
       description: 'Lift a previous block.',
       inputSchema: { accountId: z.string().optional(), user: z.string() },
@@ -101,6 +103,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
     'setPrivacy',
     {
+      annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Set a privacy setting',
       description:
         'Replace the privacy rules for a key. `mode` chooses the base policy; `allowUsers`/`disallowUsers` add user-id exceptions.',

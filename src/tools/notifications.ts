@@ -8,6 +8,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
     'mutePeer',
     {
+      annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Mute a peer',
       description: 'Mute a chat. Without `untilDate`, mutes forever.',
       inputSchema: { accountId: z.string().optional(), peer: z.string(), untilDate: z.number().int().optional() },
@@ -31,6 +32,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
     'unmutePeer',
     {
+      annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Unmute a peer',
       description: 'Clear a mute on a chat.',
       inputSchema: { accountId: z.string().optional(), peer: z.string() },
@@ -70,6 +72,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
     'setNotifySettings',
     {
+      annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Update notification settings',
       description: 'Update notify settings for a peer (sound, show preview, mute, story mute).',
       inputSchema: {

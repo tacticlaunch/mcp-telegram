@@ -42,6 +42,7 @@ export function register({ regWrite }: ToolContext): void {
   regWrite(
     'deleteChannel',
     {
+      annotations: {"destructiveHint":true,"openWorldHint":true},
       title: 'Delete a channel or supergroup',
       description: 'Permanently delete the channel. Creator only.',
       inputSchema: { accountId: z.string().optional(), peer: z.string() },
@@ -58,6 +59,7 @@ export function register({ regWrite }: ToolContext): void {
   regWrite(
     'migrateChat',
     {
+      annotations: {"destructiveHint":true,"openWorldHint":true},
       title: 'Migrate a basic group to a supergroup',
       description: 'One-way migration. Returns the new supergroup id in the resulting updates.',
       inputSchema: {
@@ -76,6 +78,7 @@ export function register({ regWrite }: ToolContext): void {
   regWrite(
     'transferOwnership',
     {
+      annotations: {"destructiveHint":true,"openWorldHint":true},
       title: 'Transfer channel ownership',
       description:
         'Transfer creator rights to another user. Requires the account 2FA password (Telegram enforces this).',

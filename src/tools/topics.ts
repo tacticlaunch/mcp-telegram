@@ -69,6 +69,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
     'editTopic',
     {
+      annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Edit a forum topic',
       description: 'Rename / re-icon / close / hide a topic.',
       inputSchema: {

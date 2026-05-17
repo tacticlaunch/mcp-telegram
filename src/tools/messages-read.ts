@@ -137,6 +137,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
     'markAsRead',
     {
+      annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Mark dialog as read',
       description: 'Mark a dialog (and optionally up to a specific message id) as read.',
       inputSchema: {

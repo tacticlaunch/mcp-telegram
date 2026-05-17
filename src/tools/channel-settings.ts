@@ -15,6 +15,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
     'editTitle',
     {
+      annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Change the title of a chat/channel',
       description: 'Set a new title. Works for channels, supergroups, and basic groups.',
       inputSchema: {
@@ -40,6 +41,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
     'editAbout',
     {
+      annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Change the description / about text',
       description: 'Set the description of a channel/supergroup. Max 255 chars.',
       inputSchema: {
@@ -60,6 +62,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
     'editPhoto',
     {
+      annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Change chat / channel avatar',
       description: 'Upload a new avatar photo from a local path or URL.',
       inputSchema: { accountId: z.string().optional(), peer: z.string(), path: z.string() },
@@ -83,6 +86,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
     'updateUsername',
     {
+      annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Set / change channel public @username',
       description: 'Assign a new public username. Pass an empty string to clear it.',
       inputSchema: { accountId: z.string().optional(), peer: z.string(), username: z.string() },
@@ -119,6 +123,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
     'setSlowMode',
     {
+      annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Set slow-mode delay',
       description:
         'Limit how often non-admins can post. Allowed values: 0 (off), 10, 30, 60, 300, 900, 3600 seconds.',
@@ -140,6 +145,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
     'toggleSignatures',
     {
+      annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Toggle author signatures on channel posts',
       description: 'Broadcast channels only.',
       inputSchema: { accountId: z.string().optional(), peer: z.string(), enabled: z.boolean() },
@@ -158,6 +164,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
     'togglePreHistoryHidden',
     {
+      annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Hide / show history for new members',
       description: 'Supergroups only. When enabled, new members cannot see history before they joined.',
       inputSchema: { accountId: z.string().optional(), peer: z.string(), enabled: z.boolean() },
@@ -176,6 +183,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
     'toggleJoinRequest',
     {
+      annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Toggle join-request requirement',
       description: 'When enabled, new members must be approved by an admin.',
       inputSchema: { accountId: z.string().optional(), peer: z.string(), enabled: z.boolean() },
@@ -194,6 +202,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
     'leaveChannel',
     {
+      annotations: {"destructiveHint":true,"openWorldHint":true},
       title: 'Leave a channel/supergroup',
       description: 'Leave the channel. Use `deleteChannel` to also remove it (creator only).',
       inputSchema: { accountId: z.string().optional(), peer: z.string() },

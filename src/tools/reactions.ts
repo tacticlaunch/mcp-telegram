@@ -16,6 +16,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
     'sendReaction',
     {
+      annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'React to a message',
       description: 'Set one or more reactions on a message. Pass an empty reaction list to remove existing reactions.',
       inputSchema: {
@@ -70,6 +71,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
     'setDefaultReaction',
     {
+      annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Set the account-wide default reaction',
       description: 'Set the quick reaction emoji shown on long-press in clients.',
       inputSchema: {

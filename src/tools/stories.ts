@@ -99,6 +99,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
     'deleteStory',
     {
+      annotations: {"destructiveHint":true,"openWorldHint":true},
       title: 'Delete one or more stories',
       description: 'Remove stories you previously posted.',
       inputSchema: {
@@ -121,6 +122,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
     'viewStory',
     {
+      annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Mark stories as viewed',
       description: 'Increment view counters for the given stories.',
       inputSchema: {

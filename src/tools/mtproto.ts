@@ -13,6 +13,7 @@ export function register({ regWrite }: ToolContext): void {
   regWrite(
     'invokeMtproto',
     {
+      annotations: {"destructiveHint":true,"openWorldHint":true},
       title: 'Invoke a raw MTProto method',
       description:
         'Call any Telegram API method by its qualified name (e.g. `messages.SendMessage`, `channels.GetFullChannel`, `stories.GetAllStories`). ' +
