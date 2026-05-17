@@ -1,5 +1,7 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
+import { getStoredSettings } from '../state.js';
+
 /**
  * Behavioural hints surfaced to the MCP client.
  *
@@ -28,11 +30,23 @@ const DEFAULT_READ: Annotations = { readOnlyHint: true, openWorldHint: true };
 /** Default for `regWrite()` — mutating, talks to Telegram. Not destructive unless overridden. */
 const DEFAULT_WRITE: Annotations = { openWorldHint: true };
 
-// ─── env gates ───────────────────────────────────────────────────────
+// ─── env gates (env > state.json) ────────────────────────────────────
 
-function isReadonly(): boolean {
-  const v = (process.env.MCP_TELEGRAM_READONLY ?? '').toLowerCase();
-  return v === '1' || v === 'true' || v === 'yes';
+function isTruthy(v: string | undefined): boolean {
+  const s = (v ?? '').toLowerCase();
+  return s === '1' || s === 'true' || s === 'yes';
+}
+
+function effectiveReadonly(stored?: boolean): boolean {
+  const env = process.env.MCP_TELEGRAM_READONLY;
+  if (env !== undefined && env !== '') return isTruthy(env);
+  return stored === true;
+}
+
+function effective(envName: string, stored?: string): string | undefined {
+  const env = process.env[envName];
+  if (env !== undefined && env !== '') return env;
+  return stored;
 }
 
 interface ToolSelector {
@@ -75,9 +89,10 @@ export interface ToolContext {
 }
 
 export function buildContext(server: McpServer): ToolContext {
-  const readonly = isReadonly();
-  const allow = parseToolList(process.env.MCP_TELEGRAM_TOOLS);
-  const deny = parseToolList(process.env.MCP_TELEGRAM_DISABLE);
+  const stored = getStoredSettings();
+  const readonly = effectiveReadonly(stored?.readonly);
+  const allow = parseToolList(effective('MCP_TELEGRAM_TOOLS', stored?.tools));
+  const deny = parseToolList(effective('MCP_TELEGRAM_DISABLE', stored?.disable));
 
   const isEnabled = (name: string): boolean => {
     if (allow && !selectorMatches(name, allow)) return false;

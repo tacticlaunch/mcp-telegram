@@ -15,10 +15,23 @@ export interface ApiCredentials {
   api_hash: string;
 }
 
+/**
+ * Tool-surface gates persisted to disk. Mirror of the
+ * `MCP_TELEGRAM_READONLY` / `MCP_TELEGRAM_TOOLS` / `MCP_TELEGRAM_DISABLE`
+ * env vars. Env always takes precedence at runtime; these stored values
+ * are the fallback when an env var is unset.
+ */
+export interface Settings {
+  readonly?: boolean;
+  tools?: string;
+  disable?: string;
+}
+
 interface StateShape {
   version: 1;
   accounts: Record<string, AccountRecord>;
   credentials?: ApiCredentials;
+  settings?: Settings;
 }
 
 const baseDir = process.env.MCP_TELEGRAM_HOME || join(homedir(), '.mcp-telegram');
@@ -84,5 +97,19 @@ export function getStoredCredentials(): ApiCredentials | undefined {
 export function setStoredCredentials(creds: ApiCredentials): void {
   const state = loadState();
   state.credentials = creds;
+  saveState();
+}
+
+export function getStoredSettings(): Settings | undefined {
+  return loadState().settings;
+}
+
+export function setStoredSettings(s: Settings): void {
+  const state = loadState();
+  state.settings = {
+    readonly: s.readonly,
+    tools: s.tools?.trim() || undefined,
+    disable: s.disable?.trim() || undefined,
+  };
   saveState();
 }

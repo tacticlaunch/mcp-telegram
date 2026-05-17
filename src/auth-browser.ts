@@ -6,7 +6,12 @@ import { dirname, join } from 'path';
 import open from 'open';
 
 import { renderAuthPage } from './auth-page.js';
-import { listAccounts, setStoredCredentials } from './state.js';
+import {
+  listAccounts,
+  setStoredCredentials,
+  getStoredSettings,
+  setStoredSettings,
+} from './state.js';
 import {
   loginStart,
   loginSubmitCode,
@@ -32,6 +37,47 @@ function loadPkgMeta(): { name: string; version: string; repoUrl?: string } {
 
 const pkgMeta = loadPkgMeta();
 
+interface SettingsField {
+  source: 'env' | 'stored' | 'default';
+  value: string;
+}
+interface SettingsSnapshot {
+  readonly: SettingsField & { value: 'true' | 'false' };
+  tools: SettingsField;
+  disable: SettingsField;
+}
+
+/**
+ * Build a snapshot of the gating settings that the page can render.
+ *
+ * For each field: env wins; otherwise fall back to state.json; otherwise
+ * report "default". `source` lets the UI lock the field when env is the
+ * authority (so users know where to change it).
+ */
+function settingsSnapshot(): SettingsSnapshot {
+  const stored = getStoredSettings();
+  const pick = (envName: string, storedVal: string | undefined): SettingsField => {
+    const env = process.env[envName];
+    if (env !== undefined && env !== '') return { source: 'env', value: env };
+    if (storedVal) return { source: 'stored', value: storedVal };
+    return { source: 'default', value: '' };
+  };
+  const readonlyEnv = process.env.MCP_TELEGRAM_READONLY;
+  const readonly: SettingsSnapshot['readonly'] = (() => {
+    if (readonlyEnv !== undefined && readonlyEnv !== '') {
+      const truthy = ['1', 'true', 'yes'].includes(readonlyEnv.toLowerCase());
+      return { source: 'env', value: truthy ? 'true' : 'false' };
+    }
+    if (stored?.readonly !== undefined) return { source: 'stored', value: stored.readonly ? 'true' : 'false' };
+    return { source: 'default', value: 'false' };
+  })();
+  return {
+    readonly,
+    tools: pick('MCP_TELEGRAM_TOOLS', stored?.tools),
+    disable: pick('MCP_TELEGRAM_DISABLE', stored?.disable),
+  };
+}
+
 /**
  * Run a one-shot login flow in the browser.
  *
@@ -41,18 +87,34 @@ const pkgMeta = loadPkgMeta();
  * timeout / explicit cancel).
  */
 export function runBrowserLogin(opts: { timeoutMs?: number } = {}): Promise<AccountRecord> {
+  // The HTTP server lives this long total — long enough that the user
+  // can inspect/edit settings after a successful auth before the tab
+  // becomes dead.
   const timeoutMs = opts.timeoutMs ?? 10 * 60_000;
   const authId = randomBytes(16).toString('base64url');
 
   return new Promise<AccountRecord>((resolve, reject) => {
-    let settled = false;
-    const settle = (fn: () => void) => {
-      if (settled) return;
-      settled = true;
+    let serverClosed = false;
+    let promiseSettled = false;
+
+    /**
+     * Resolve/reject the runBrowserLogin promise.
+     *
+     * Decoupled from shutdown — once the user finishes auth, the agent
+     * can proceed immediately, but the HTTP server keeps running so the
+     * user can interact with the settings UI on the same tab.
+     */
+    const settlePromise = (fn: () => void) => {
+      if (promiseSettled) return;
+      promiseSettled = true;
       fn();
-      // Give the browser tab a moment to render the success state and
-      // for any in-flight response to flush before we tear down.
-      setTimeout(shutdown, 1500);
+    };
+
+    const shutdown = () => {
+      if (serverClosed) return;
+      serverClosed = true;
+      clearTimeout(timer);
+      server.close();
     };
 
     const server = createServer(async (req, res) => {
@@ -65,18 +127,14 @@ export function runBrowserLogin(opts: { timeoutMs?: number } = {}): Promise<Acco
     });
 
     const timer = setTimeout(() => {
-      settle(() => reject(new Error('Login timed out')));
+      settlePromise(() => reject(new Error('Login timed out')));
+      shutdown();
     }, timeoutMs);
-
-    function shutdown() {
-      clearTimeout(timer);
-      server.close();
-    }
 
     server.listen(0, '127.0.0.1', async () => {
       const address = server.address();
       if (!address || typeof address === 'string') {
-        return settle(() => reject(new Error('Failed to obtain a local port')));
+        return settlePromise(() => reject(new Error('Failed to obtain a local port')));
       }
       const baseUrl = `http://127.0.0.1:${address.port}`;
       const authUrl = `${baseUrl}/`;
@@ -101,7 +159,7 @@ export function runBrowserLogin(opts: { timeoutMs?: number } = {}): Promise<Acco
           LOG_LEVEL: process.env.LOG_LEVEL,
         };
         res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
-        return res.end(renderAuthPage(authId, accounts, creds, env, pkgMeta));
+        return res.end(renderAuthPage(authId, accounts, creds, env, pkgMeta, settingsSnapshot()));
       }
 
       if (req.method === 'GET' && url.pathname === '/logo.png') {
@@ -156,7 +214,7 @@ export function runBrowserLogin(opts: { timeoutMs?: number } = {}): Promise<Acco
           if (result.status === 'password_needed') {
             return sendJson(res, 200, { status: 'password_needed' });
           }
-          settle(() => resolve(result.account));
+          settlePromise(() => resolve(result.account));
           return sendJson(res, 200, { redirect: '/done' });
         } catch (err) {
           return sendJson(res, 400, { error: (err as Error).message });
@@ -167,7 +225,7 @@ export function runBrowserLogin(opts: { timeoutMs?: number } = {}): Promise<Acco
         if (!body.password) return sendJson(res, 400, { error: 'password is required' });
         try {
           const { account } = await loginSubmitPassword(authId, String(body.password));
-          settle(() => resolve(account));
+          settlePromise(() => resolve(account));
           return sendJson(res, 200, { redirect: '/done' });
         } catch (err) {
           return sendJson(res, 400, { error: (err as Error).message });
@@ -178,8 +236,41 @@ export function runBrowserLogin(opts: { timeoutMs?: number } = {}): Promise<Acco
         const id = String(body.account_id || '');
         const account = listAccounts().find((a) => a.id === id);
         if (!account) return sendJson(res, 404, { error: 'account not found' });
-        settle(() => resolve(account));
+        settlePromise(() => resolve(account));
         return sendJson(res, 200, { redirect: '/done' });
+      }
+
+      if (url.pathname === '/authorize/save-settings') {
+        const current = settingsSnapshot();
+        const next: { readonly?: boolean; tools?: string; disable?: string } = {};
+
+        // For each field: accept the page's value only when env doesn't
+        // own it; otherwise keep whatever was already stored.
+        if (current.readonly.source === 'env') {
+          // Leave whatever was stored before — env wins anyway.
+          next.readonly = getStoredSettings()?.readonly;
+        } else if (typeof body.readonly === 'boolean') {
+          next.readonly = body.readonly;
+        }
+        if (current.tools.source === 'env') {
+          next.tools = getStoredSettings()?.tools;
+        } else if (typeof body.tools === 'string') {
+          next.tools = body.tools;
+        }
+        if (current.disable.source === 'env') {
+          next.disable = getStoredSettings()?.disable;
+        } else if (typeof body.disable === 'string') {
+          next.disable = body.disable;
+        }
+        setStoredSettings(next);
+        return sendJson(res, 200, { ok: true, snapshot: settingsSnapshot() });
+      }
+
+      if (url.pathname === '/authorize/close') {
+        sendJson(res, 200, { ok: true });
+        // Give the response a moment to flush before we tear down.
+        setTimeout(shutdown, 200);
+        return;
       }
 
       return sendJson(res, 404, { error: 'not_found' });

@@ -16,6 +16,12 @@ export interface PackageMeta {
   repoUrl?: string;
 }
 
+export interface SettingsSnapshot {
+  readonly: { source: 'env' | 'stored' | 'default'; value: 'true' | 'false' };
+  tools: { source: 'env' | 'stored' | 'default'; value: string };
+  disable: { source: 'env' | 'stored' | 'default'; value: string };
+}
+
 function escapeText(s: string): string {
   return s.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c] as string));
 }
@@ -28,7 +34,8 @@ export function renderAuthPage(
   accounts: { id: string; phone: string; username?: string }[],
   creds: CredentialsHint,
   env: EnvSnapshot,
-  pkg: PackageMeta
+  pkg: PackageMeta,
+  settings: SettingsSnapshot
 ): string {
   const brandLink = pkg.repoUrl
     ? `<a href="${escapeAttr(pkg.repoUrl)}" target="_blank" rel="noopener">${escapeText(pkg.name)}</a>`
@@ -36,6 +43,7 @@ export function renderAuthPage(
   const accountsJson = JSON.stringify(accounts);
   const credsJson = JSON.stringify(creds);
   const envJson = JSON.stringify(env);
+  const settingsJson = JSON.stringify(settings);
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -129,6 +137,35 @@ export function renderAuthPage(
     border-top: 1px solid var(--border);
     font-size: 12px;
   }
+  .settings {
+    width: 100%; background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 18px; display: flex; flex-direction: column; gap: 14px;
+  }
+  .settings.hidden { display: none; }
+  .settings-title { margin: 0; font-size: 15px; font-weight: 600; }
+  .settings-lede { margin: -4px 0 0; font-size: 12px; color: var(--muted); }
+  .setting-row { display: flex; flex-direction: column; gap: 6px; }
+  .setting-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .setting-name { font-size: 13px; font-weight: 500; }
+  .setting-name code { background: var(--input); padding: 1px 5px; border-radius: 4px; font-size: 11px; }
+  .setting-source { font-size: 11px; color: var(--muted); }
+  .setting-source.env { color: var(--accent); }
+  .toggle { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); cursor: pointer; }
+  .toggle input { width: auto; }
+  textarea {
+    width: 100%; padding: 10px 12px;
+    background: var(--input); color: var(--fg);
+    border: 1px solid var(--border); border-radius: 8px;
+    font: 13px/1.4 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    outline: none; resize: vertical;
+  }
+  textarea:focus { border-color: var(--accent); }
+  textarea[disabled], input[type="checkbox"][disabled] { opacity: 0.5; cursor: not-allowed; }
+  .setting-actions { display: flex; gap: 8px; }
+  .setting-actions button { flex: 1; margin-top: 0; }
+  .settings-msg { font-size: 12px; color: var(--muted); min-height: 16px; }
+  .settings-msg.ok { color: var(--accent); }
+  .settings-msg.err { color: var(--danger); }
   details summary {
     color: var(--muted); cursor: pointer; user-select: none;
     list-style: none; display: flex; align-items: center; gap: 6px;
@@ -204,10 +241,48 @@ export function renderAuthPage(
     <div id="step-done" class="step">
       <div class="success">
         <div class="check">&check;</div>
-        <h1>Done</h1>
-        <p class="lede">You can close this tab.</p>
+        <h1>Signed in</h1>
+        <p class="lede">Configure which tools the agent sees, then close this tab.</p>
       </div>
     </div>
+  </div>
+
+  <div id="settings-card" class="settings hidden">
+    <h2 class="settings-title">Tool surface</h2>
+    <p class="settings-lede">Env vars win; stored values are the fallback. Restart your MCP client to pick up changes.</p>
+
+    <div class="setting-row">
+      <label class="setting-head">
+        <span class="setting-name">Read-only</span>
+        <span class="setting-source" id="src-readonly"></span>
+      </label>
+      <label class="toggle">
+        <input id="set-readonly" type="checkbox" />
+        <span>Hide every destructive / mutating tool</span>
+      </label>
+    </div>
+
+    <div class="setting-row">
+      <label class="setting-head" for="set-tools">
+        <span class="setting-name">Allowlist (<code>MCP_TELEGRAM_TOOLS</code>)</span>
+        <span class="setting-source" id="src-tools"></span>
+      </label>
+      <textarea id="set-tools" rows="2" placeholder="empty = all tools allowed&#10;e.g. login,list*,search*,get*"></textarea>
+    </div>
+
+    <div class="setting-row">
+      <label class="setting-head" for="set-disable">
+        <span class="setting-name">Blocklist (<code>MCP_TELEGRAM_DISABLE</code>)</span>
+        <span class="setting-source" id="src-disable"></span>
+      </label>
+      <textarea id="set-disable" rows="2" placeholder="empty = nothing blocked&#10;e.g. delete*,ban*,kick*,invokeMtproto"></textarea>
+    </div>
+
+    <div class="setting-actions">
+      <button id="save-settings">Save settings</button>
+      <button id="close-tab" class="ghost">Close</button>
+    </div>
+    <div class="settings-msg" id="settings-msg"></div>
   </div>
 
   <div class="foot">
@@ -225,6 +300,7 @@ export function renderAuthPage(
   const accounts = ${accountsJson};
   let creds = ${credsJson};
   const env = ${envJson};
+  let settings = ${settingsJson};
 
   const $ = (id) => document.getElementById(id);
   const show = (id) => {
@@ -336,7 +412,77 @@ export function renderAuthPage(
     } finally { $('submit-password').disabled = false; }
   };
 
-  function finish() { show('step-done'); }
+  function finish() {
+    show('step-done');
+    $('settings-card').classList.remove('hidden');
+    renderSettings();
+  }
+
+  function renderSettings() {
+    const sourceLabel = (s) =>
+      s.source === 'env' ? 'set via env (locked)' :
+      s.source === 'stored' ? 'saved locally' : 'default';
+    const setSrc = (id, src) => {
+      const el = $(id);
+      el.textContent = sourceLabel(src);
+      el.classList.toggle('env', src.source === 'env');
+    };
+    setSrc('src-readonly', settings.readonly);
+    setSrc('src-tools', settings.tools);
+    setSrc('src-disable', settings.disable);
+
+    $('set-readonly').checked = settings.readonly.value === 'true';
+    $('set-readonly').disabled = settings.readonly.source === 'env';
+
+    $('set-tools').value = settings.tools.value || '';
+    $('set-tools').disabled = settings.tools.source === 'env';
+
+    $('set-disable').value = settings.disable.value || '';
+    $('set-disable').disabled = settings.disable.source === 'env';
+  }
+
+  function settingsMsg(text, kind) {
+    const el = $('settings-msg');
+    el.textContent = text;
+    el.classList.remove('ok', 'err');
+    if (kind) el.classList.add(kind);
+  }
+
+  $('save-settings').onclick = async () => {
+    settingsMsg('Saving…');
+    $('save-settings').disabled = true;
+    try {
+      const payload = {
+        auth_id: AUTH_ID,
+        readonly: $('set-readonly').checked,
+        tools: $('set-tools').value.trim(),
+        disable: $('set-disable').value.trim(),
+      };
+      const r = await fetch('/authorize/save-settings', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const body = await r.json().catch(() => ({}));
+      if (!r.ok) return settingsMsg(body.error || 'Failed to save', 'err');
+      settings = body.snapshot || settings;
+      renderSettings();
+      settingsMsg('Saved. Restart your MCP client to apply.', 'ok');
+    } finally {
+      $('save-settings').disabled = false;
+    }
+  };
+
+  $('close-tab').onclick = async () => {
+    try {
+      await fetch('/authorize/close', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ auth_id: AUTH_ID }),
+      });
+    } catch {/* ignore — server may already be shutting down */}
+    window.close();
+  };
 
   startFlow();
 </script>
