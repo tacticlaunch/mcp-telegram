@@ -6,7 +6,7 @@ import { resolveAccountId, safeClient, parsePeer, safeStringify } from './_helpe
 
 export function register({ reg, regWrite }: ToolContext): void {
   reg(
-    'getMyBoosts',
+    'get_my_boosts',
     {
       title: 'Get own boost slots',
       description: 'Return the current boost slots the user has available across channels.',
@@ -21,7 +21,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'applyBoost',
+    'apply_boost',
     {
       title: 'Apply boost slots to a channel',
       description: 'Apply one or more boost slots to a channel.',

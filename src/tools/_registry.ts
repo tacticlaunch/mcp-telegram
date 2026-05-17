@@ -14,7 +14,7 @@ import { REQUIRED_TOOLS } from '../tool-catalog.js';
  * `reg()` / `regWrite()` apply a sensible default per call, and the
  * tool definition can override via `annotations`:
  *
- *   ctx.regWrite('deleteMessages', {
+ *   ctx.regWrite('delete_messages', {
  *     title, description, inputSchema,
  *     annotations: { destructiveHint: true, openWorldHint: true },
  *   }, handler);

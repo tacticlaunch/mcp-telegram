@@ -70,7 +70,7 @@ function emptyBanRights(): any {
 
 export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
-    'banUser',
+    'ban_user',
     {
       annotations: {"destructiveHint":true,"openWorldHint":true},
       title: 'Ban a user from a channel/supergroup',
@@ -99,7 +99,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'unbanUser',
+    'unban_user',
     {
       annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Lift a ban / restriction',
@@ -123,7 +123,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'restrictUser',
+    'restrict_user',
     {
       annotations: {"destructiveHint":true,"openWorldHint":true},
       title: 'Restrict a user with a custom rights mask',
@@ -152,7 +152,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'promoteAdmin',
+    'promote_admin',
     {
       annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Promote a user to admin',
@@ -183,7 +183,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'demoteAdmin',
+    'demote_admin',
     {
       annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Strip admin rights',
@@ -208,7 +208,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'inviteUser',
+    'invite_user',
     {
       annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Invite a user to a channel/supergroup',
@@ -232,7 +232,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   reg(
-    'getParticipant',
+    'get_participant',
     {
       title: 'Get a single participant',
       description: 'Return role, rights, and join date for one user in a channel/supergroup.',
@@ -251,7 +251,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   reg(
-    'listParticipants',
+    'list_participants',
     {
       title: 'List participants of a group or channel',
       description:
@@ -309,7 +309,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'deleteUserHistory',
+    'delete_user_history',
     {
       annotations: {"destructiveHint":true,"openWorldHint":true},
       title: 'Delete all messages by a user in a chat',
@@ -329,7 +329,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'kickParticipant',
+    'kick_participant',
     {
       annotations: {"destructiveHint":true,"openWorldHint":true},
       title: 'Kick a participant',
@@ -345,7 +345,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   reg(
-    'getAdminLog',
+    'get_admin_log',
     {
       title: 'Get the admin action log',
       description:

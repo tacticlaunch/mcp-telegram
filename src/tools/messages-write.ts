@@ -14,7 +14,7 @@ import {
 
 export function register({ regWrite }: ToolContext): void {
   regWrite(
-    'sendMessage',
+    'send_message',
     {
       title: 'Send a message',
       description:
@@ -48,7 +48,7 @@ export function register({ regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'editMessage',
+    'edit_message',
     {
       annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Edit a message',
@@ -76,7 +76,7 @@ export function register({ regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'deleteMessages',
+    'delete_messages',
     {
       annotations: {"destructiveHint":true,"openWorldHint":true},
       title: 'Delete messages',
@@ -97,7 +97,7 @@ export function register({ regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'forwardMessages',
+    'forward_messages',
     {
       title: 'Forward messages',
       description: 'Forward messages from one dialog to another.',
@@ -124,7 +124,7 @@ export function register({ regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'pinMessage',
+    'pin_message',
     {
       annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Pin a message',
@@ -149,7 +149,7 @@ export function register({ regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'unpinMessage',
+    'unpin_message',
     {
       annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Unpin a message',
@@ -173,7 +173,7 @@ export function register({ regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'sendMessageToPhone',
+    'send_message_to_phone',
     {
       title: 'Send a message to a phone number',
       description:

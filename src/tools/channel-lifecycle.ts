@@ -7,7 +7,7 @@ import { resolveAccountId, safeClient, parsePeer, safeStringify } from './_helpe
 
 export function register({ regWrite }: ToolContext): void {
   regWrite(
-    'createChannel',
+    'create_channel',
     {
       title: 'Create a channel or supergroup',
       description: 'Create a broadcast channel (`broadcast: true`) or a supergroup (`megagroup: true`).',
@@ -40,7 +40,7 @@ export function register({ regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'deleteChannel',
+    'delete_channel',
     {
       annotations: {"destructiveHint":true,"openWorldHint":true},
       title: 'Delete a channel or supergroup',
@@ -57,7 +57,7 @@ export function register({ regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'migrateChat',
+    'migrate_chat',
     {
       annotations: {"destructiveHint":true,"openWorldHint":true},
       title: 'Migrate a basic group to a supergroup',
@@ -76,7 +76,7 @@ export function register({ regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'transferOwnership',
+    'transfer_ownership',
     {
       annotations: {"destructiveHint":true,"openWorldHint":true},
       title: 'Transfer channel ownership',

@@ -6,7 +6,7 @@ import { resolveAccountId, safeClient, parsePeer, safeStringify } from './_helpe
 
 export function register({ reg }: ToolContext): void {
   reg(
-    'getInlineBotResults',
+    'get_inline_bot_results',
     {
       title: 'Query an inline bot',
       description: 'Run an inline bot query (the `@bot query` form) and return the results.',

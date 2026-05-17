@@ -6,7 +6,7 @@ import { resolveAccountId, safeClient, parsePeer, safeStringify } from './_helpe
 
 export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
-    'saveDraft',
+    'save_draft',
     {
       annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Save a message draft',
@@ -39,11 +39,11 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'clearDraft',
+    'clear_draft',
     {
       annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Clear a draft',
-      description: 'Equivalent to `saveDraft` with an empty text.',
+      description: 'Equivalent to `save_draft` with an empty text.',
       inputSchema: { accountId: z.string().optional(), peer: z.string() },
     },
     async (args: any) => {
@@ -56,7 +56,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   reg(
-    'listDrafts',
+    'list_drafts',
     {
       title: 'List all drafts',
       description: 'Return all dialog drafts the user has across chats.',

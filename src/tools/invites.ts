@@ -6,7 +6,7 @@ import { resolveAccountId, safeClient, parsePeer, safeStringify } from './_helpe
 
 export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
-    'createInviteLink',
+    'create_invite_link',
     {
       title: 'Create an invite link',
       description: 'Generate a new invite link with optional expiry, usage cap, and join-request gate.',
@@ -37,7 +37,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   reg(
-    'listInviteLinks',
+    'list_invite_links',
     {
       title: 'List invite links',
       description: 'List all invite links the current user can see in a chat.',
@@ -69,7 +69,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'revokeInviteLink',
+    'revoke_invite_link',
     {
       annotations: {"destructiveHint":true,"openWorldHint":true},
       title: 'Revoke an invite link',
@@ -96,7 +96,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   reg(
-    'listInviteJoiners',
+    'list_invite_joiners',
     {
       title: 'List users that joined via an invite link',
       description: 'List users that joined a chat through a specific invite link.',

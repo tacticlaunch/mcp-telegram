@@ -8,7 +8,7 @@ import { resolveAccountId, safeClient, serializeEntity } from './_helpers.js';
 
 export function register({ reg, regWrite }: ToolContext): void {
   reg(
-    'listAccounts',
+    'list_accounts',
     {
       // No openWorldHint — purely reads local state.
       annotations: { readOnlyHint: true },
@@ -61,7 +61,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   reg(
-    'getMe',
+    'get_me',
     {
       title: 'Get current user',
       description: 'Return the profile of the authenticated user for the chosen account.',
@@ -76,7 +76,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   reg(
-    'openSettings',
+    'open_settings',
     {
       // Spawns a local browser tab — touches external state (file system,
       // browser process) but is otherwise read-only from Telegram's view.

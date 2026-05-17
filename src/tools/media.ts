@@ -16,7 +16,7 @@ import {
 
 export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
-    'sendFile',
+    'send_file',
     {
       title: 'Send a file',
       description:
@@ -57,7 +57,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   reg(
-    'downloadMedia',
+    'download_media',
     {
       title: 'Download media from a message',
       description: `Download the media attached to a message. Files land in ${downloadsDir} (override with MCP_TELEGRAM_DOWNLOADS env). Returns the absolute path.`,
@@ -83,7 +83,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   reg(
-    'downloadProfilePhoto',
+    'download_profile_photo',
     {
       title: 'Download a profile photo',
       description: `Download the profile photo of a user/chat/channel. Saved under ${downloadsDir}.`,
@@ -101,7 +101,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   reg(
-    'transcribeMessage',
+    'transcribe_message',
     {
       title: 'Transcribe a voice/video message',
       description:

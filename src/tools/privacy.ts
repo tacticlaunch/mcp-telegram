@@ -37,7 +37,7 @@ function buildPrivacyKey(name: string): any {
 
 export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
-    'blockUser',
+    'block_user',
     {
       annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Block a user',
@@ -54,7 +54,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'unblockUser',
+    'unblock_user',
     {
       annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Unblock a user',
@@ -71,7 +71,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   reg(
-    'listBlocked',
+    'list_blocked',
     {
       title: 'List blocked users',
       description: 'List users currently on the block list.',
@@ -86,7 +86,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   reg(
-    'getPrivacy',
+    'get_privacy',
     {
       title: 'Get a privacy setting',
       description: 'Return current rules for one privacy key.',
@@ -101,7 +101,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'setPrivacy',
+    'set_privacy',
     {
       annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Set a privacy setting',

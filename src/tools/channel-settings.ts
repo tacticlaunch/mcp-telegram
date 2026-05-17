@@ -13,7 +13,7 @@ import {
 
 export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
-    'editTitle',
+    'edit_title',
     {
       annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Change the title of a chat/channel',
@@ -39,7 +39,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'editAbout',
+    'edit_about',
     {
       annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Change the description / about text',
@@ -60,7 +60,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'editPhoto',
+    'edit_photo',
     {
       annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Change chat / channel avatar',
@@ -84,7 +84,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'updateUsername',
+    'update_username',
     {
       annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Set / change channel public @username',
@@ -103,7 +103,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   reg(
-    'checkUsername',
+    'check_username',
     {
       title: 'Check if a username is available',
       description: 'Verify whether a desired channel/supergroup username is free.',
@@ -121,7 +121,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'setSlowMode',
+    'set_slow_mode',
     {
       annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Set slow-mode delay',
@@ -143,7 +143,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'toggleSignatures',
+    'toggle_signatures',
     {
       annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Toggle author signatures on channel posts',
@@ -162,7 +162,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'togglePreHistoryHidden',
+    'toggle_pre_history_hidden',
     {
       annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Hide / show history for new members',
@@ -181,7 +181,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'toggleJoinRequest',
+    'toggle_join_request',
     {
       annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Toggle join-request requirement',
@@ -200,11 +200,11 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'leaveChannel',
+    'leave_channel',
     {
       annotations: {"destructiveHint":true,"openWorldHint":true},
       title: 'Leave a channel/supergroup',
-      description: 'Leave the channel. Use `deleteChannel` to also remove it (creator only).',
+      description: 'Leave the channel. Use `delete_channel` to also remove it (creator only).',
       inputSchema: { accountId: z.string().optional(), peer: z.string() },
     },
     async (args: any) => {
@@ -217,7 +217,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   reg(
-    'getChannelInfo',
+    'get_channel_info',
     {
       title: 'Get full channel/supergroup info',
       description: 'Return extended info for a channel or supergroup (about, participants count, linked chat, slow mode).',
@@ -257,7 +257,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   reg(
-    'getUserInfo',
+    'get_user_info',
     {
       title: 'Get full user info',
       description: 'Return extended profile info (bio, common chats count, etc.) for a user.',

@@ -6,7 +6,7 @@ import { resolveAccountId, safeClient, resolveFileArg, safeStringify } from './_
 
 export function register({ regWrite }: ToolContext): void {
   regWrite(
-    'updateProfile',
+    'update_profile',
     {
       annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Update own profile (name, bio)',
@@ -33,7 +33,7 @@ export function register({ regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'updateMyUsername',
+    'update_my_username',
     {
       annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Update own @username',
@@ -49,7 +49,7 @@ export function register({ regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'setBirthday',
+    'set_birthday',
     {
       annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Set birthday on profile',
@@ -74,7 +74,7 @@ export function register({ regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'setProfilePhoto',
+    'set_profile_photo',
     {
       annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Set own profile photo',

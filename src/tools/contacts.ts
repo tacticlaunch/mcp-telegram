@@ -13,7 +13,7 @@ import {
 
 export function register({ reg, regWrite }: ToolContext): void {
   reg(
-    'listContacts',
+    'list_contacts',
     {
       title: 'List own contacts',
       description: 'List all users in the contact book.',
@@ -29,7 +29,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'addContact',
+    'add_contact',
     {
       annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Add a contact',
@@ -61,7 +61,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'deleteContact',
+    'delete_contact',
     {
       annotations: {"destructiveHint":true,"openWorldHint":true},
       title: 'Delete contacts',
@@ -83,7 +83,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   reg(
-    'searchContacts',
+    'search_contacts',
     {
       title: 'Search contacts and global directory',
       description: 'Search users/chats/channels by a query (matches name, username, and indexed text).',

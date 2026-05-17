@@ -7,7 +7,7 @@ import { resolveAccountId, safeClient, parsePeer, safeStringify } from './_helpe
 
 export function register({ reg, regWrite }: ToolContext): void {
   reg(
-    'listTopics',
+    'list_topics',
     {
       title: 'List forum topics',
       description: 'List topics in a supergroup with forum mode enabled.',
@@ -37,7 +37,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'createTopic',
+    'create_topic',
     {
       title: 'Create a forum topic',
       description: 'Create a new topic in a forum-enabled supergroup.',
@@ -67,7 +67,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'editTopic',
+    'edit_topic',
     {
       annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Edit a forum topic',

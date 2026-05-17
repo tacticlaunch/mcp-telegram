@@ -11,7 +11,7 @@ import {
 
 export function register({ regWrite }: ToolContext): void {
   regWrite(
-    'invokeMtproto',
+    'invoke_mtproto',
     {
       annotations: {"destructiveHint":true,"openWorldHint":true},
       title: 'Invoke a raw MTProto method',

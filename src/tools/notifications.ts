@@ -6,7 +6,7 @@ import { resolveAccountId, safeClient, parsePeer, safeStringify } from './_helpe
 
 export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
-    'mutePeer',
+    'mute_peer',
     {
       annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Mute a peer',
@@ -30,7 +30,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'unmutePeer',
+    'unmute_peer',
     {
       annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Unmute a peer',
@@ -52,7 +52,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   reg(
-    'getNotifySettings',
+    'get_notify_settings',
     {
       title: 'Get notification settings',
       description: 'Return notification settings for a peer.',
@@ -70,7 +70,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'setNotifySettings',
+    'set_notify_settings',
     {
       annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Update notification settings',

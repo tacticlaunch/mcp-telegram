@@ -7,7 +7,7 @@ import { resolveAccountId, safeClient, safeStringify } from './_helpers.js';
 
 export function register({ reg, regWrite }: ToolContext): void {
   reg(
-    'getMyStickers',
+    'get_my_stickers',
     {
       title: 'List installed sticker sets',
       description: "Return the user's installed sticker sets.",
@@ -22,7 +22,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'installStickerSet',
+    'install_sticker_set',
     {
       annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Install a sticker set',
@@ -47,7 +47,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'addRecentSticker',
+    'add_recent_sticker',
     {
       annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Add a sticker to recent',

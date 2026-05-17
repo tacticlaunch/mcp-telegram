@@ -132,17 +132,17 @@ To add another account, ask the agent to call `login` again.
 | Tool | What it does |
 | --- | --- |
 | `login` | Open the browser-based sign-in flow. Adds an account. |
-| `listAccounts` | List signed-in accounts. |
-| `listDialogs` | List dialogs/chats/channels. Filters: `unread`, `archived`, `ignorePinned`, `folder`, `limit`. |
-| `listMessages` | List messages in a dialog. Newest first. |
-| `searchMessages` | Search inside one dialog: `query`, `filter` (photos/videos/url/voice/...), `fromUser`, date range. |
-| `searchGlobal` | Search across every chat you have. |
-| `searchDialogs` | Find dialogs by name/title/username substring. |
-| `sendMessage` | Send text. Supports `replyTo`, `topMsgId`, `parseMode`, `schedule`, `silent`. |
-| `sendFile` | Send a file (local path or `https://` URL). Pass an array for an album. |
-| `downloadMedia` | Save the media on a message to disk. |
-| `transcribeMessage` | Transcribe a voice/video note (Premium). |
-| `invokeMtproto` | Call any raw MTProto method by name. Auto-resolves `peer`/`channel`/`user` strings. |
+| `list_accounts` | List signed-in accounts. |
+| `list_dialogs` | List dialogs/chats/channels. Filters: `unread`, `archived`, `ignorePinned`, `folder`, `limit`. |
+| `list_messages` | List messages in a dialog. Newest first. |
+| `search_messages` | Search inside one dialog: `query`, `filter` (photos/videos/url/voice/...), `fromUser`, date range. |
+| `search_global` | Search across every chat you have. |
+| `search_dialogs` | Find dialogs by name/title/username substring. |
+| `send_message` | Send text. Supports `replyTo`, `topMsgId`, `parseMode`, `schedule`, `silent`. |
+| `send_file` | Send a file (local path or `https://` URL). Pass an array for an album. |
+| `download_media` | Save the media on a message to disk. |
+| `transcribe_message` | Transcribe a voice/video note (Premium). |
+| `invoke_mtproto` | Call any raw MTProto method by name. Auto-resolves `peer`/`channel`/`user` strings. |
 
 <details>
 <summary><b>Sessions (local)</b> (4)</summary>
@@ -151,10 +151,10 @@ These are local-only: they manage which Telegram sessions live in `~/.mcp-telegr
 
 | Tool | What it does |
 | --- | --- |
-| `listAccounts` | List signed-in accounts. |
+| `list_accounts` | List signed-in accounts. |
 | `login` | Browser-based sign-in. Adds an account. |
 | `logout` | Drop a local session and revoke it on Telegram. |
-| `openSettings` | Open the local settings page (tool surface + read-only). |
+| `open_settings` | Open the local settings page (tool surface + read-only). |
 
 </details>
 
@@ -163,11 +163,11 @@ These are local-only: they manage which Telegram sessions live in `~/.mcp-telegr
 
 | Tool | What it does |
 | --- | --- |
-| `getMe` | Return the profile of the authenticated user. |
-| `updateProfile` | Change own first/last name and bio. |
-| `updateMyUsername` | Set or clear own `@username`. |
-| `setBirthday` | Set the account birthday. |
-| `setProfilePhoto` | Upload a new avatar (local path or URL). |
+| `get_me` | Return the profile of the authenticated user. |
+| `update_profile` | Change own first/last name and bio. |
+| `update_my_username` | Set or clear own `@username`. |
+| `set_birthday` | Set the account birthday. |
+| `set_profile_photo` | Upload a new avatar (local path or URL). |
 
 </details>
 
@@ -176,11 +176,11 @@ These are local-only: they manage which Telegram sessions live in `~/.mcp-telegr
 
 | Tool | What it does |
 | --- | --- |
-| `listDialogs` | List dialogs. Filters: `unread`, `archived`, `ignorePinned`, `folder`, `limit`. |
-| `searchDialogs` | Find dialogs by name/title/username substring. |
-| `resolveUsername` | Resolve `@username` to a user/channel/chat entity. |
-| `listFolders` | List custom dialog folders (chat filters). |
-| `listContacts` | List contacts. |
+| `list_dialogs` | List dialogs. Filters: `unread`, `archived`, `ignorePinned`, `folder`, `limit`. |
+| `search_dialogs` | Find dialogs by name/title/username substring. |
+| `resolve_username` | Resolve `@username` to a user/channel/chat entity. |
+| `list_folders` | List custom dialog folders (chat filters). |
+| `list_contacts` | List contacts. |
 
 </details>
 
@@ -189,12 +189,12 @@ These are local-only: they manage which Telegram sessions live in `~/.mcp-telegr
 
 | Tool | What it does |
 | --- | --- |
-| `listMessages` | List messages in a dialog. |
-| `searchMessages` | Search inside one dialog (text, type filter, sender, date range). |
-| `searchGlobal` | Search across every chat. |
-| `getMessage` | Fetch one or more messages by id. |
-| `getMessageReactions` | Get reactions on messages. |
-| `markAsRead` | Mark messages read up to an id. |
+| `list_messages` | List messages in a dialog. |
+| `search_messages` | Search inside one dialog (text, type filter, sender, date range). |
+| `search_global` | Search across every chat. |
+| `get_message` | Fetch one or more messages by id. |
+| `get_message_reactions` | Get reactions on messages. |
+| `mark_as_read` | Mark messages read up to an id. |
 
 </details>
 
@@ -203,13 +203,13 @@ These are local-only: they manage which Telegram sessions live in `~/.mcp-telegr
 
 | Tool | What it does |
 | --- | --- |
-| `sendMessage` | Send text. |
-| `editMessage` | Edit a previously sent message. |
-| `deleteMessages` | Delete by id (optionally revoke for all). |
-| `forwardMessages` | Forward messages between dialogs. |
-| `pinMessage` / `unpinMessage` | Pin / unpin in a dialog. |
-| `sendReaction` | Set reactions on a message. |
-| `sendMessageToPhone` | Send to a phone number, auto-creates a temporary contact. |
+| `send_message` | Send text. |
+| `edit_message` | Edit a previously sent message. |
+| `delete_messages` | Delete by id (optionally revoke for all). |
+| `forward_messages` | Forward messages between dialogs. |
+| `pin_message` / `unpin_message` | Pin / unpin in a dialog. |
+| `send_reaction` | Set reactions on a message. |
+| `send_message_to_phone` | Send to a phone number, auto-creates a temporary contact. |
 
 </details>
 
@@ -218,10 +218,10 @@ These are local-only: they manage which Telegram sessions live in `~/.mcp-telegr
 
 | Tool | What it does |
 | --- | --- |
-| `sendFile` | Send a file (path or URL). Albums via array. |
-| `downloadMedia` | Save a message's media to disk. |
-| `downloadProfilePhoto` | Save a peer's avatar to disk. |
-| `transcribeMessage` | Transcribe voice/video (Premium). |
+| `send_file` | Send a file (path or URL). Albums via array. |
+| `download_media` | Save a message's media to disk. |
+| `download_profile_photo` | Save a peer's avatar to disk. |
+| `transcribe_message` | Transcribe voice/video (Premium). |
 
 </details>
 
@@ -230,10 +230,10 @@ These are local-only: they manage which Telegram sessions live in `~/.mcp-telegr
 
 | Tool | What it does |
 | --- | --- |
-| `sendPoll` | Send a poll. Supports quiz, multiple-choice, anonymous, close period. |
-| `votePoll` | Cast a vote. |
-| `closePoll` | Finalize a poll. |
-| `getPollResults` | Fetch tally. |
+| `send_poll` | Send a poll. Supports quiz, multiple-choice, anonymous, close period. |
+| `vote_poll` | Cast a vote. |
+| `close_poll` | Finalize a poll. |
+| `get_poll_results` | Fetch tally. |
 
 </details>
 
@@ -242,9 +242,9 @@ These are local-only: they manage which Telegram sessions live in `~/.mcp-telegr
 
 | Tool | What it does |
 | --- | --- |
-| `sendReaction` | Set emoji reactions on a message. |
-| `getMessageReactions` | Read reactions. |
-| `setDefaultReaction` | Set account-wide default. |
+| `send_reaction` | Set emoji reactions on a message. |
+| `get_message_reactions` | Read reactions. |
+| `set_default_reaction` | Set account-wide default. |
 
 </details>
 
@@ -253,12 +253,12 @@ These are local-only: they manage which Telegram sessions live in `~/.mcp-telegr
 
 | Tool | What it does |
 | --- | --- |
-| `listStories` | Feed of contacts' stories. |
-| `getPeerStories` | One peer's stories. |
-| `sendStory` | Post a story (photo or video). |
-| `deleteStory` | Delete own stories. |
-| `viewStory` | Mark stories viewed. |
-| `getStoryViewers` | List who viewed your story. |
+| `list_stories` | Feed of contacts' stories. |
+| `get_peer_stories` | One peer's stories. |
+| `send_story` | Post a story (photo or video). |
+| `delete_story` | Delete own stories. |
+| `view_story` | Mark stories viewed. |
+| `get_story_viewers` | List who viewed your story. |
 
 </details>
 
@@ -267,17 +267,17 @@ These are local-only: they manage which Telegram sessions live in `~/.mcp-telegr
 
 | Tool | What it does |
 | --- | --- |
-| `banUser` | Full ban (optional `untilDate`). |
-| `unbanUser` | Lift restrictions. |
-| `restrictUser` | Apply a custom rights mask. |
-| `promoteAdmin` | Grant admin rights (with rank). |
-| `demoteAdmin` | Strip admin rights. |
-| `inviteUser` | Add users to a channel/supergroup. |
-| `kickParticipant` | Kick from chat/channel. |
-| `getParticipant` | Single participant info. |
-| `listParticipants` | Members with filter (admins/banned/bots/...) and substring search. |
-| `deleteUserHistory` | Remove every message by a user. |
-| `getAdminLog` | Recent admin events with event-type filter. |
+| `ban_user` | Full ban (optional `untilDate`). |
+| `unban_user` | Lift restrictions. |
+| `restrict_user` | Apply a custom rights mask. |
+| `promote_admin` | Grant admin rights (with rank). |
+| `demote_admin` | Strip admin rights. |
+| `invite_user` | Add users to a channel/supergroup. |
+| `kick_participant` | Kick from chat/channel. |
+| `get_participant` | Single participant info. |
+| `list_participants` | Members with filter (admins/banned/bots/...) and substring search. |
+| `delete_user_history` | Remove every message by a user. |
+| `get_admin_log` | Recent admin events with event-type filter. |
 
 </details>
 
@@ -286,18 +286,18 @@ These are local-only: they manage which Telegram sessions live in `~/.mcp-telegr
 
 | Tool | What it does |
 | --- | --- |
-| `editTitle` | Change title (works for channels, supergroups, and basic groups). |
-| `editAbout` | Change description. |
-| `editPhoto` | Change avatar (path or URL). |
-| `updateUsername` | Set/clear public `@username`. |
-| `checkUsername` | Check availability. |
-| `setSlowMode` | Set slow-mode seconds. |
-| `toggleSignatures` | Author signatures on channel posts. |
-| `togglePreHistoryHidden` | Hide history from new members. |
-| `toggleJoinRequest` | Require admin approval to join. |
-| `leaveChannel` | Leave a channel/supergroup. |
-| `getChannelInfo` | Extended info (about, counts, linked chat, slow-mode). |
-| `getUserInfo` | Extended user info (bio, common chats). |
+| `edit_title` | Change title (works for channels, supergroups, and basic groups). |
+| `edit_about` | Change description. |
+| `edit_photo` | Change avatar (path or URL). |
+| `update_username` | Set/clear public `@username`. |
+| `check_username` | Check availability. |
+| `set_slow_mode` | Set slow-mode seconds. |
+| `toggle_signatures` | Author signatures on channel posts. |
+| `toggle_pre_history_hidden` | Hide history from new members. |
+| `toggle_join_request` | Require admin approval to join. |
+| `leave_channel` | Leave a channel/supergroup. |
+| `get_channel_info` | Extended info (about, counts, linked chat, slow-mode). |
+| `get_user_info` | Extended user info (bio, common chats). |
 
 </details>
 
@@ -306,10 +306,10 @@ These are local-only: they manage which Telegram sessions live in `~/.mcp-telegr
 
 | Tool | What it does |
 | --- | --- |
-| `createChannel` | New broadcast channel or supergroup (optional forum mode). |
-| `deleteChannel` | Permanently delete. |
-| `migrateChat` | Basic group → supergroup. |
-| `transferOwnership` | Hand over creator rights (requires 2FA password). |
+| `create_channel` | New broadcast channel or supergroup (optional forum mode). |
+| `delete_channel` | Permanently delete. |
+| `migrate_chat` | Basic group → supergroup. |
+| `transfer_ownership` | Hand over creator rights (requires 2FA password). |
 
 </details>
 
@@ -318,10 +318,10 @@ These are local-only: they manage which Telegram sessions live in `~/.mcp-telegr
 
 | Tool | What it does |
 | --- | --- |
-| `createInviteLink` | New link with optional expiry, usage cap, join-request gate. |
-| `listInviteLinks` | List active or revoked links. |
-| `revokeInviteLink` | Revoke a specific link. |
-| `listInviteJoiners` | List users that joined via a link. |
+| `create_invite_link` | New link with optional expiry, usage cap, join-request gate. |
+| `list_invite_links` | List active or revoked links. |
+| `revoke_invite_link` | Revoke a specific link. |
+| `list_invite_joiners` | List users that joined via a link. |
 
 </details>
 
@@ -330,9 +330,9 @@ These are local-only: they manage which Telegram sessions live in `~/.mcp-telegr
 
 | Tool | What it does |
 | --- | --- |
-| `listTopics` | List forum topics. |
-| `createTopic` | Create a new topic. |
-| `editTopic` | Rename, re-icon, close, hide. |
+| `list_topics` | List forum topics. |
+| `create_topic` | Create a new topic. |
+| `edit_topic` | Rename, re-icon, close, hide. |
 
 </details>
 
@@ -341,9 +341,9 @@ These are local-only: they manage which Telegram sessions live in `~/.mcp-telegr
 
 | Tool | What it does |
 | --- | --- |
-| `saveDraft` | Save a draft for a dialog. |
-| `clearDraft` | Drop the draft for a dialog. |
-| `listDrafts` | List all dialog drafts. |
+| `save_draft` | Save a draft for a dialog. |
+| `clear_draft` | Drop the draft for a dialog. |
+| `list_drafts` | List all dialog drafts. |
 
 </details>
 
@@ -352,10 +352,10 @@ These are local-only: they manage which Telegram sessions live in `~/.mcp-telegr
 
 | Tool | What it does |
 | --- | --- |
-| `mutePeer` | Mute a chat (optional `untilDate`). |
-| `unmutePeer` | Unmute. |
-| `getNotifySettings` | Read settings. |
-| `setNotifySettings` | Update mute, previews, sound, story-mute. |
+| `mute_peer` | Mute a chat (optional `untilDate`). |
+| `unmute_peer` | Unmute. |
+| `get_notify_settings` | Read settings. |
+| `set_notify_settings` | Update mute, previews, sound, story-mute. |
 
 </details>
 
@@ -364,10 +364,10 @@ These are local-only: they manage which Telegram sessions live in `~/.mcp-telegr
 
 | Tool | What it does |
 | --- | --- |
-| `createFolder` | New folder with include/exclude rules. |
-| `editFolder` | Replace folder rules. |
-| `deleteFolder` | Remove a folder. |
-| `reorderFolders` | Set display order. |
+| `create_folder` | New folder with include/exclude rules. |
+| `edit_folder` | Replace folder rules. |
+| `delete_folder` | Remove a folder. |
+| `reorder_folders` | Set display order. |
 
 </details>
 
@@ -376,10 +376,10 @@ These are local-only: they manage which Telegram sessions live in `~/.mcp-telegr
 
 | Tool | What it does |
 | --- | --- |
-| `listContacts` | All contacts. |
-| `addContact` | Add a user to contacts. |
-| `deleteContact` | Remove users from contacts. |
-| `searchContacts` | Search contacts + global directory. |
+| `list_contacts` | All contacts. |
+| `add_contact` | Add a user to contacts. |
+| `delete_contact` | Remove users from contacts. |
+| `search_contacts` | Search contacts + global directory. |
 
 </details>
 
@@ -388,10 +388,10 @@ These are local-only: they manage which Telegram sessions live in `~/.mcp-telegr
 
 | Tool | What it does |
 | --- | --- |
-| `blockUser` / `unblockUser` | Block / unblock. |
-| `listBlocked` | Block list. |
-| `getPrivacy` | Read a privacy key. |
-| `setPrivacy` | Update a privacy key (mode + allow/disallow lists). |
+| `block_user` / `unblock_user` | Block / unblock. |
+| `list_blocked` | Block list. |
+| `get_privacy` | Read a privacy key. |
+| `set_privacy` | Update a privacy key (mode + allow/disallow lists). |
 
 </details>
 
@@ -400,9 +400,9 @@ These are local-only: they manage which Telegram sessions live in `~/.mcp-telegr
 
 | Tool | What it does |
 | --- | --- |
-| `getMyStickers` | Installed sticker sets. |
-| `installStickerSet` | Install by short name. |
-| `addRecentSticker` | Pin a sticker to recent. |
+| `get_my_stickers` | Installed sticker sets. |
+| `install_sticker_set` | Install by short name. |
+| `add_recent_sticker` | Pin a sticker to recent. |
 
 </details>
 
@@ -411,8 +411,8 @@ These are local-only: they manage which Telegram sessions live in `~/.mcp-telegr
 
 | Tool | What it does |
 | --- | --- |
-| `getMyBoosts` | List your boost slots. |
-| `applyBoost` | Apply slots to a channel. |
+| `get_my_boosts` | List your boost slots. |
+| `apply_boost` | Apply slots to a channel. |
 
 </details>
 
@@ -421,8 +421,8 @@ These are local-only: they manage which Telegram sessions live in `~/.mcp-telegr
 
 | Tool | What it does |
 | --- | --- |
-| `getInlineBotResults` | Run an inline bot query. |
-| `invokeMtproto` | Call any MTProto method by qualified name (e.g. `messages.SendMessage`, `stories.GetAllStories`). String values for `peer`/`channel`/`user`/`fromPeer`/`toPeer`/`bot`/`chat` are auto-resolved to InputPeer / InputUser. |
+| `get_inline_bot_results` | Run an inline bot query. |
+| `invoke_mtproto` | Call any MTProto method by qualified name (e.g. `messages.SendMessage`, `stories.GetAllStories`). String values for `peer`/`channel`/`user`/`fromPeer`/`toPeer`/`bot`/`chat` are auto-resolved to InputPeer / InputUser. |
 
 </details>
 
@@ -441,7 +441,7 @@ Examples:
 ```bash
 MCP_TELEGRAM_READONLY=1                                    # read-only agent
 MCP_TELEGRAM_TOOLS='login,list*,search*,get*'              # discovery-only
-MCP_TELEGRAM_DISABLE='delete*,ban*,kick*,createChannel,deleteChannel,transferOwnership,invokeMtproto'  # safer write set
+MCP_TELEGRAM_DISABLE='delete*,ban*,kick*,create_channel,delete_channel,transfer_ownership,invokeMtproto'  # safer write set
 ```
 
 ## Environment
@@ -451,7 +451,7 @@ MCP_TELEGRAM_DISABLE='delete*,ban*,kick*,createChannel,deleteChannel,transferOwn
 | `TELEGRAM_API_ID` | yes | — | From my.telegram.org/apps. If unset, the auth page prompts for it and saves to `state.json`. |
 | `TELEGRAM_API_HASH` | yes | — | Same as above. |
 | `MCP_TELEGRAM_HOME` | no | `~/.mcp-telegram` | State + per-account session storage. |
-| `MCP_TELEGRAM_DOWNLOADS` | no | `$MCP_TELEGRAM_HOME/downloads` | Where `downloadMedia` / `downloadProfilePhoto` save files. |
+| `MCP_TELEGRAM_DOWNLOADS` | no | `$MCP_TELEGRAM_HOME/downloads` | Where `download_media` / `download_profile_photo` save files. |
 | `MCP_TELEGRAM_READONLY` | no | — | Set to `1`/`true`/`yes` to hide every destructive tool. |
 | `MCP_TELEGRAM_TOOLS` | no | — | Strict allowlist. Comma-separated tool names; supports `prefix*` wildcards. If set, anything not matched is hidden. |
 | `MCP_TELEGRAM_DISABLE` | no | — | Blocklist applied after the allowlist. Same syntax. |
@@ -469,10 +469,10 @@ MCP_TELEGRAM_READONLY=1
 MCP_TELEGRAM_TOOLS='login,list*,search*,get*,resolveUsername'
 
 # Allow writes but keep destructive ones away from the agent
-MCP_TELEGRAM_DISABLE='delete*,ban*,kick*,createChannel,deleteChannel,transferOwnership,invokeMtproto'
+MCP_TELEGRAM_DISABLE='delete*,ban*,kick*,create_channel,delete_channel,transfer_ownership,invokeMtproto'
 
 # Specific surface: read + send/edit only
-MCP_TELEGRAM_TOOLS='login,listAccounts,listDialogs,listMessages,searchMessages,searchGlobal,sendMessage,editMessage'
+MCP_TELEGRAM_TOOLS='login,list_accounts,list_dialogs,list_messages,search_messages,search_global,send_message,editMessage'
 ```
 
 In an MCP client config, drop these into the same `env` block as `TELEGRAM_API_ID`/`TELEGRAM_API_HASH`. To verify, re-open your client — the tools the server advertises are exactly the ones registered after the gates run.

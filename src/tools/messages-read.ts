@@ -15,7 +15,7 @@ import {
 
 export function register({ reg, regWrite }: ToolContext): void {
   reg(
-    'listMessages',
+    'list_messages',
     {
       title: 'List messages',
       description: 'List messages in a dialog. Newest first.',
@@ -34,7 +34,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   reg(
-    'searchMessages',
+    'search_messages',
     {
       title: 'Search messages in a dialog',
       description:
@@ -72,7 +72,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   reg(
-    'searchGlobal',
+    'search_global',
     {
       title: 'Search messages across all dialogs',
       description: 'Search messages across every chat the user is in. Useful for "find that link about X".',
@@ -116,7 +116,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   reg(
-    'getMessage',
+    'get_message',
     {
       title: 'Get message by id',
       description: 'Fetch one or several messages from a dialog by their ids.',
@@ -135,7 +135,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'markAsRead',
+    'mark_as_read',
     {
       annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Mark dialog as read',

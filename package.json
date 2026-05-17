@@ -1,6 +1,6 @@
 {
   "name": "mcp-telegram",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Telegram MCP server (MTProto). Connect Claude, Cursor, Claude Code, VS Code, Codex, Cline, Windsurf, and other MCP clients to a real Telegram user account: read dialogs, search messages globally, send/edit/forward, react/poll, moderate channels, manage stories/contacts/folders, transcribe voice notes, and call any raw MTProto method. Browser-based local sign-in, multi-account.",
   "type": "module",
   "main": "dist/index.js",

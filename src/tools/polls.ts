@@ -7,7 +7,7 @@ import { resolveAccountId, safeClient, parsePeer, safeStringify } from './_helpe
 
 export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
-    'sendPoll',
+    'send_poll',
     {
       title: 'Send a poll',
       description:
@@ -71,7 +71,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'votePoll',
+    'vote_poll',
     {
       title: 'Vote in a poll',
       description: 'Cast a vote on a poll by the index(es) of the chosen options.',
@@ -95,7 +95,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'closePoll',
+    'close_poll',
     {
       annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Close an active poll',
@@ -124,7 +124,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   reg(
-    'getPollResults',
+    'get_poll_results',
     {
       title: 'Get poll results',
       description: 'Fetch the current vote tally for a poll message.',

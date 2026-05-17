@@ -14,7 +14,7 @@ function buildReactions(args: { emoji?: string[]; customEmojiIds?: string[] }): 
 
 export function register({ reg, regWrite }: ToolContext): void {
   regWrite(
-    'sendReaction',
+    'send_reaction',
     {
       annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'React to a message',
@@ -47,7 +47,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   reg(
-    'getMessageReactions',
+    'get_message_reactions',
     {
       title: 'Get reactions on messages',
       description: 'Fetch the current reactions for one or more messages in a dialog.',
@@ -69,7 +69,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'setDefaultReaction',
+    'set_default_reaction',
     {
       annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Set the account-wide default reaction',

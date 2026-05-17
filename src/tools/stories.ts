@@ -13,7 +13,7 @@ import {
 
 export function register({ reg, regWrite }: ToolContext): void {
   reg(
-    'listStories',
+    'list_stories',
     {
       title: 'List active stories from contacts',
       description: "Return the stories feed (other users' active stories).",
@@ -31,7 +31,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   reg(
-    'getPeerStories',
+    'get_peer_stories',
     {
       title: "Get a peer's stories",
       description: 'Return active stories posted by one peer.',
@@ -47,7 +47,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'sendStory',
+    'send_story',
     {
       title: 'Post a story',
       description: 'Publish a story (photo or video) on the chosen peer. Visibility defaults to "everyone".',
@@ -97,7 +97,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'deleteStory',
+    'delete_story',
     {
       annotations: {"destructiveHint":true,"openWorldHint":true},
       title: 'Delete one or more stories',
@@ -120,7 +120,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'viewStory',
+    'view_story',
     {
       annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Mark stories as viewed',
@@ -141,7 +141,7 @@ export function register({ reg, regWrite }: ToolContext): void {
   );
 
   reg(
-    'getStoryViewers',
+    'get_story_viewers',
     {
       title: 'List viewers of a story',
       description: 'Show who has viewed a story you posted.',

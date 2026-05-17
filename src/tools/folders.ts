@@ -43,7 +43,7 @@ const FolderFields = {
 
 export function register({ regWrite }: ToolContext): void {
   regWrite(
-    'createFolder',
+    'create_folder',
     {
       title: 'Create a dialog folder',
       description: 'Create a new dialog folder (chat filter). `id` is auto-assigned to the next free slot 2..255.',
@@ -63,7 +63,7 @@ export function register({ regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'editFolder',
+    'edit_folder',
     {
       annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Edit a dialog folder',
@@ -80,7 +80,7 @@ export function register({ regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'deleteFolder',
+    'delete_folder',
     {
       annotations: {"destructiveHint":true,"openWorldHint":true},
       title: 'Delete a dialog folder',
@@ -96,7 +96,7 @@ export function register({ regWrite }: ToolContext): void {
   );
 
   regWrite(
-    'reorderFolders',
+    'reorder_folders',
     {
       annotations: {"idempotentHint":true,"openWorldHint":true},
       title: 'Reorder dialog folders',

@@ -11,7 +11,7 @@ import {
 
 export function register({ reg }: ToolContext): void {
   reg(
-    'listDialogs',
+    'list_dialogs',
     {
       title: 'List dialogs',
       description: 'List available Telegram dialogs, chats and channels for the chosen account.',
@@ -48,7 +48,7 @@ export function register({ reg }: ToolContext): void {
   );
 
   reg(
-    'searchDialogs',
+    'search_dialogs',
     {
       title: 'Search dialogs',
       description: 'Find dialogs by a substring against their name/title/username.',
@@ -81,7 +81,7 @@ export function register({ reg }: ToolContext): void {
   );
 
   reg(
-    'resolveUsername',
+    'resolve_username',
     {
       title: 'Resolve a Telegram username',
       description: 'Look up a user, channel, or chat by @username.',
@@ -99,7 +99,7 @@ export function register({ reg }: ToolContext): void {
   );
 
   reg(
-    'listFolders',
+    'list_folders',
     {
       title: 'List custom dialog folders',
       description: 'Return the user-defined folders (a.k.a. chat filters) with their inclusion rules.',
