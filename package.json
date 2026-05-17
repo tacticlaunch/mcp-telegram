@@ -1,7 +1,7 @@
 {
   "name": "mcp-telegram",
-  "version": "0.1.0",
-  "description": "MCP server to work with Telegram through MTProto",
+  "version": "1.0.0",
+  "description": "Local OAuth-enabled MCP server for Telegram (MTProto). Multi-account.",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -9,15 +9,21 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/tacticlaunch/mcp-telegram"
+    "url": "git+https://github.com/tacticlaunch/mcp-telegram.git"
+  },
+  "homepage": "https://github.com/tacticlaunch/mcp-telegram#readme",
+  "bugs": {
+    "url": "https://github.com/tacticlaunch/mcp-telegram/issues"
   },
   "keywords": [
     "mcp",
+    "model-context-protocol",
     "telegram",
-    "cursor",
+    "mtproto",
+    "oauth",
     "claude",
-    "ai",
-    "model-context-protocol"
+    "cursor",
+    "ai-agent"
   ],
   "files": [
     "dist"
@@ -25,35 +31,32 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "dev": "ts-node src/index.ts",
-    "inspect": "npx fastmcp inspect src/mcp.ts",
+    "dev": "tsx watch src/index.ts",
     "lint": "eslint src --ext .ts",
-    "test": "jest",
     "prepublishOnly": "npm run build && chmod +x dist/index.js"
   },
   "dependencies": {
-    "chalk": "^4.1.2",
-    "commander": "^11.1.0",
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "big-integer": "^1.6.52",
     "dotenv": "^16.3.1",
-    "fastmcp": "^1.20.5",
+    "express": "^5.2.1",
     "telegram": "^2.19.10",
-    "zod": "^3.24.2"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@types/express": "^5.0.6",
     "@types/node": "^20.10.5",
     "@typescript-eslint/eslint-plugin": "^6.15.0",
     "@typescript-eslint/parser": "^6.15.0",
     "eslint": "^8.56.0",
-    "jest": "^29.7.0",
-    "ts-jest": "^29.1.1",
-    "ts-node": "^10.9.2",
+    "tsx": "^4.19.2",
     "typescript": "^5.3.3"
   },
   "engines": {
     "node": ">=20.0.0"
   },
   "bin": {
-    "mcp-telegram": "./dist/index.js"
+    "mcp-telegram": "dist/index.js"
   },
   "publishConfig": {
     "access": "public"

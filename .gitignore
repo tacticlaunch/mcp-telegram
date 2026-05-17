@@ -25,3 +25,13 @@ Thumbs.db
 
 *.session
 mcp_telegram_session
+
+# add-mcp / client install artifacts (not part of the package)
+.codex/
+.cursor/
+.gemini/
+.vscode/
+.zed/
+config/
+.mcp.json
+opencode.json
