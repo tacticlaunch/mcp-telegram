@@ -19,13 +19,17 @@
     "ai",
     "model-context-protocol"
   ],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
     "dev": "ts-node src/index.ts",
     "inspect": "npx fastmcp inspect src/mcp.ts",
     "lint": "eslint src --ext .ts",
-    "test": "jest"
+    "test": "jest",
+    "prepublishOnly": "npm run build && chmod +x dist/index.js"
   },
   "dependencies": {
     "chalk": "^4.1.2",
