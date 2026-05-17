@@ -15,7 +15,14 @@ export interface ToolEntry {
    *  grey them out when read-only mode is on. Mirrors the regWrite
    *  registrations under src/tools/. */
   mutating?: boolean;
+  /** Tools that manage the install itself. Cannot be disabled by the
+   *  allow/deny gates — otherwise the user could lock themselves out
+   *  of adding/listing accounts or re-opening the settings page. */
+  required?: boolean;
 }
+
+/** Names of always-on tools, derived from the catalog. */
+export const REQUIRED_TOOLS = new Set<string>();
 export interface ToolGroup {
   id: string;
   title: string;
@@ -27,10 +34,10 @@ export const TOOL_CATALOG: ToolGroup[] = [
     id: 'sessions',
     title: 'Sessions (local)',
     tools: [
-      { name: 'listAccounts', desc: 'List signed-in accounts' },
-      { name: 'login', desc: 'Sign in to a new account' },
-      { name: 'logout', desc: 'Drop a session', mutating: true },
-      { name: 'openSettings', desc: 'Open this settings page' },
+      { name: 'listAccounts', desc: 'List signed-in accounts', required: true },
+      { name: 'login', desc: 'Sign in to a new account', required: true },
+      { name: 'logout', desc: 'Drop a session', mutating: true, required: true },
+      { name: 'openSettings', desc: 'Open this settings page', required: true },
     ],
   },
   {
@@ -258,4 +265,9 @@ export function allToolNames(): string[] {
   const out: string[] = [];
   for (const g of TOOL_CATALOG) for (const t of g.tools) out.push(t.name);
   return out;
+}
+
+// Populate REQUIRED_TOOLS at module load so callers don't have to rescan.
+for (const g of TOOL_CATALOG) {
+  for (const t of g.tools) if (t.required) REQUIRED_TOOLS.add(t.name);
 }

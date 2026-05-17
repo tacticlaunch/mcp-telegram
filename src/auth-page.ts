@@ -22,7 +22,7 @@ export interface SettingsSnapshot {
   disable: { source: 'env' | 'stored' | 'default'; value: string };
 }
 
-export interface ToolEntry { name: string; desc: string; }
+export interface ToolEntry { name: string; desc: string; mutating?: boolean; required?: boolean; }
 export interface ToolGroup { id: string; title: string; tools: ToolEntry[]; }
 
 function escapeText(s: string): string {
@@ -225,6 +225,15 @@ export function renderAuthPage(
   .tool-item.hidden { display: none; }
   .tool-item.muted-by-ro { opacity: 0.4; }
   .tool-item.muted-by-ro .tool-name { text-decoration: line-through; }
+  .badge-required {
+    display: inline-block; margin-left: 6px; padding: 1px 6px;
+    background: rgba(42,171,238,0.15); color: var(--accent);
+    border-radius: 4px; font-size: 9.5px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.04em;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    vertical-align: middle;
+  }
+  .tool-item[data-required="1"] .tool-name { font-weight: 500; }
   .setting-source:empty { display: none; }
   input[type="checkbox"][disabled] + label,
   .tool-item input[disabled] ~ label { opacity: 0.5; cursor: not-allowed; }
@@ -581,11 +590,17 @@ export function renderAuthPage(
         item.className = 'tool-item';
         item.dataset.tool = t.name;
         if (t.mutating) item.dataset.mutating = '1';
+        if (t.required) item.dataset.required = '1';
+        const isChecked = t.required || enabled.has(t.name);
+        const isDisabled = t.required || locked;
+        const requiredBadge = t.required
+          ? ' <span class="badge-required" title="Required — disabling this would lock you out of managing the install">required</span>'
+          : '';
         item.innerHTML =
-          '<input type="checkbox" id="' + id + '" ' + (enabled.has(t.name) ? 'checked' : '') +
-            (locked ? ' disabled' : '') + ' />' +
+          '<input type="checkbox" id="' + id + '" ' + (isChecked ? 'checked' : '') +
+            (isDisabled ? ' disabled' : '') + ' />' +
           '<label for="' + id + '">' +
-            '<span class="tool-name">' + escapeHtmlAttr(t.name) + '</span>' +
+            '<span class="tool-name">' + escapeHtmlAttr(t.name) + requiredBadge + '</span>' +
             '<span class="tool-desc">' + escapeHtmlAttr(t.desc) + '</span>' +
           '</label>';
         list.appendChild(item);
@@ -596,14 +611,15 @@ export function renderAuthPage(
       head.querySelector('[data-action="all"]').onclick = (e) => {
         e.preventDefault();
         if (locked) return;
-        list.querySelectorAll('input[type="checkbox"]').forEach((cb) => { cb.checked = true; });
+        list.querySelectorAll('input[type="checkbox"]:not([disabled])').forEach((cb) => { cb.checked = true; });
         updateGroupCount(card);
         updateSummary();
       };
       head.querySelector('[data-action="none"]').onclick = (e) => {
         e.preventDefault();
         if (locked) return;
-        list.querySelectorAll('input[type="checkbox"]').forEach((cb) => { cb.checked = false; });
+        // Required tools stay checked — they can't be disabled.
+        list.querySelectorAll('.tool-item:not([data-required="1"]) input[type="checkbox"]:not([disabled])').forEach((cb) => { cb.checked = false; });
         updateGroupCount(card);
         updateSummary();
       };
@@ -644,7 +660,8 @@ export function renderAuthPage(
     const toolsAreLocked = toolsLocked();
     for (const item of document.querySelectorAll('#tool-groups .tool-item[data-mutating="1"]')) {
       const cb = item.querySelector('input[type="checkbox"]');
-      cb.disabled = toolsAreLocked || ro;
+      const isRequired = item.dataset.required === '1';
+      cb.disabled = toolsAreLocked || ro || isRequired;
       item.classList.toggle('muted-by-ro', ro);
     }
     updateSummary();
@@ -667,13 +684,14 @@ export function renderAuthPage(
 
   $('select-all').onclick = () => {
     if (toolsLocked()) return;
-    document.querySelectorAll('#tool-groups input[type="checkbox"]').forEach((cb) => { cb.checked = true; });
+    document.querySelectorAll('#tool-groups input[type="checkbox"]:not([disabled])').forEach((cb) => { cb.checked = true; });
     for (const card of document.querySelectorAll('.tool-group')) updateGroupCount(card);
     updateSummary();
   };
   $('select-none').onclick = () => {
     if (toolsLocked()) return;
-    document.querySelectorAll('#tool-groups input[type="checkbox"]').forEach((cb) => { cb.checked = false; });
+    // Required tools stay checked.
+    document.querySelectorAll('#tool-groups .tool-item:not([data-required="1"]) input[type="checkbox"]:not([disabled])').forEach((cb) => { cb.checked = false; });
     for (const card of document.querySelectorAll('.tool-group')) updateGroupCount(card);
     updateSummary();
   };
@@ -697,14 +715,15 @@ export function renderAuthPage(
    * - otherwise → allowlist of the enabled ones
    */
   function checkboxesToSelectors() {
-    const allNames = [];
+    // Required tools are forced on by the server regardless of selectors,
+    // so we ignore them when computing the smallest selector pair.
     const onNames = [];
     const offNames = [];
     for (const item of document.querySelectorAll('#tool-groups .tool-item')) {
-      const name = item.dataset.tool;
-      allNames.push(name);
+      if (item.dataset.required === '1') continue;
       const cb = item.querySelector('input[type="checkbox"]');
-      if (cb.checked) onNames.push(name); else offNames.push(name);
+      if (cb.checked) onNames.push(item.dataset.tool);
+      else offNames.push(item.dataset.tool);
     }
     if (offNames.length === 0) return { tools: '', disable: '' };
     if (onNames.length === 0) return { tools: '_none', disable: '' };

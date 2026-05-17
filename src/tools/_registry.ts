@@ -1,6 +1,7 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 import { getStoredSettings } from '../state.js';
+import { REQUIRED_TOOLS } from '../tool-catalog.js';
 
 /**
  * Behavioural hints surfaced to the MCP client.
@@ -95,6 +96,10 @@ export function buildContext(server: McpServer): ToolContext {
   const deny = parseToolList(effective('MCP_TELEGRAM_DISABLE', stored?.disable));
 
   const isEnabled = (name: string): boolean => {
+    // Required tools (listAccounts, login, logout, openSettings) are the
+    // only way for the user to recover from a misconfigured allowlist
+    // or rotate accounts. They bypass the env/state gates entirely.
+    if (REQUIRED_TOOLS.has(name)) return true;
     if (allow && !selectorMatches(name, allow)) return false;
     if (deny && selectorMatches(name, deny)) return false;
     return true;
