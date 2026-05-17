@@ -22,6 +22,9 @@ export interface SettingsSnapshot {
   disable: { source: 'env' | 'stored' | 'default'; value: string };
 }
 
+export interface ToolEntry { name: string; desc: string; }
+export interface ToolGroup { id: string; title: string; tools: ToolEntry[]; }
+
 function escapeText(s: string): string {
   return s.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c] as string));
 }
@@ -36,6 +39,7 @@ export function renderAuthPage(
   env: EnvSnapshot,
   pkg: PackageMeta,
   settings: SettingsSnapshot,
+  catalog: ToolGroup[],
   initialStep: 'login' | 'settings' = 'login'
 ): string {
   const brandLink = pkg.repoUrl
@@ -45,6 +49,7 @@ export function renderAuthPage(
   const credsJson = JSON.stringify(creds);
   const envJson = JSON.stringify(env);
   const settingsJson = JSON.stringify(settings);
+  const catalogJson = JSON.stringify(catalog);
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -139,9 +144,42 @@ export function renderAuthPage(
     font-size: 12px;
   }
   .settings {
-    width: 100%; background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    width: min(560px, calc(100vw - 48px));
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
     padding: 18px; display: flex; flex-direction: column; gap: 14px;
   }
+  .settings-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .settings-summary { font-size: 12px; color: var(--muted); padding: 4px 8px; background: var(--input); border-radius: 8px; white-space: nowrap; }
+  .env-pinned {
+    padding: 8px 10px; background: var(--input); border: 1px solid var(--border);
+    border-radius: 8px; font-size: 12px; color: var(--muted);
+  }
+  .env-pinned.hidden { display: none; }
+  .env-pinned code { background: transparent; color: var(--fg); }
+  .tool-toolbar { display: flex; gap: 6px; align-items: stretch; }
+  .tool-toolbar input { flex: 1; padding: 7px 10px; font-size: 13px; }
+  button.mini { padding: 7px 10px; margin: 0; font-size: 12px; font-weight: 500; }
+  #tool-groups { display: flex; flex-direction: column; gap: 6px; max-height: 50vh; overflow-y: auto; padding-right: 2px; }
+  .tool-group { border: 1px solid var(--border); border-radius: 8px; background: var(--input); }
+  .tool-group summary { padding: 10px 12px; cursor: pointer; user-select: none; display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13px; font-weight: 500; }
+  .tool-group summary::-webkit-details-marker { display: none; }
+  .tool-group summary::before { content: "▸"; display: inline-block; transition: transform .15s; color: var(--muted); }
+  .tool-group[open] summary::before { transform: rotate(90deg); }
+  .tool-group-head { display: flex; align-items: center; gap: 8px; flex: 1; }
+  .tool-group-count { color: var(--muted); font-size: 12px; font-weight: 400; }
+  .tool-group-actions { display: flex; gap: 4px; }
+  .tool-group-actions button { padding: 3px 8px; margin: 0; font-size: 11px; background: transparent; border: 1px solid var(--border); color: var(--muted); border-radius: 6px; }
+  .tool-group-actions button:hover { color: var(--accent); border-color: var(--accent); }
+  .tool-list { padding: 4px 12px 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; }
+  @media (max-width: 480px) { .tool-list { grid-template-columns: 1fr; } }
+  .tool-item { display: flex; align-items: center; gap: 6px; font-size: 12px; padding: 3px 0; min-width: 0; }
+  .tool-item input { width: auto; margin: 0; flex-shrink: 0; }
+  .tool-item label { color: var(--fg); cursor: pointer; flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .tool-item .tool-name { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tool-item .tool-desc { color: var(--muted); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tool-item.hidden { display: none; }
+  input[type="checkbox"][disabled] + label,
+  .tool-item input[disabled] ~ label { opacity: 0.5; cursor: not-allowed; }
   .settings.hidden { display: none; }
   .settings-title { margin: 0; font-size: 15px; font-weight: 600; }
   .settings-lede { margin: -4px 0 0; font-size: 12px; color: var(--muted); }
@@ -249,12 +287,17 @@ export function renderAuthPage(
   </div>
 
   <div id="settings-card" class="settings hidden">
-    <h2 class="settings-title">Tool surface</h2>
-    <p class="settings-lede">Env vars win; stored values are the fallback. Restart your MCP client to pick up changes.</p>
+    <div class="settings-header">
+      <div>
+        <h2 class="settings-title">Tool surface</h2>
+        <p class="settings-lede">Pick which tools the agent sees. Restart your MCP client after saving.</p>
+      </div>
+      <div class="settings-summary" id="settings-summary"></div>
+    </div>
 
     <div class="setting-row">
       <label class="setting-head">
-        <span class="setting-name">Read-only</span>
+        <span class="setting-name">Read-only mode</span>
         <span class="setting-source" id="src-readonly"></span>
       </label>
       <label class="toggle">
@@ -263,24 +306,20 @@ export function renderAuthPage(
       </label>
     </div>
 
-    <div class="setting-row">
-      <label class="setting-head" for="set-tools">
-        <span class="setting-name">Allowlist (<code>MCP_TELEGRAM_TOOLS</code>)</span>
-        <span class="setting-source" id="src-tools"></span>
-      </label>
-      <textarea id="set-tools" rows="2" placeholder="empty = all tools allowed&#10;e.g. login,list*,search*,get*"></textarea>
+    <div id="env-pinned" class="env-pinned hidden">
+      Per-tool selection is pinned by <code>MCP_TELEGRAM_TOOLS</code> / <code>MCP_TELEGRAM_DISABLE</code> in the environment. Unset those to edit here.
     </div>
 
-    <div class="setting-row">
-      <label class="setting-head" for="set-disable">
-        <span class="setting-name">Blocklist (<code>MCP_TELEGRAM_DISABLE</code>)</span>
-        <span class="setting-source" id="src-disable"></span>
-      </label>
-      <textarea id="set-disable" rows="2" placeholder="empty = nothing blocked&#10;e.g. delete*,ban*,kick*,invokeMtproto"></textarea>
+    <div class="tool-toolbar">
+      <input id="tool-filter" type="search" placeholder="Filter tools…" />
+      <button id="select-all" class="ghost mini">All</button>
+      <button id="select-none" class="ghost mini">None</button>
     </div>
+
+    <div id="tool-groups"></div>
 
     <div class="setting-actions">
-      <button id="save-settings">Save settings</button>
+      <button id="save-settings">Save</button>
       <button id="close-tab" class="ghost">Close</button>
     </div>
     <div class="settings-msg" id="settings-msg"></div>
@@ -302,6 +341,7 @@ export function renderAuthPage(
   let creds = ${credsJson};
   const env = ${envJson};
   let settings = ${settingsJson};
+  const TOOL_CATALOG = ${catalogJson};
   const INITIAL_STEP = ${JSON.stringify(initialStep)};
 
   const $ = (id) => document.getElementById(id);
@@ -420,28 +460,166 @@ export function renderAuthPage(
     renderSettings();
   }
 
+  function sourceLabel(s) {
+    return s.source === 'env' ? 'set via env (locked)' :
+           s.source === 'stored' ? 'saved locally' : 'default';
+  }
+
+  /**
+   * Parse a comma-separated env-style tool selector into a matcher.
+   * Supports literal names and \`prefix*\` wildcards.
+   */
+  function parseSelector(str) {
+    const explicit = new Set();
+    const prefixes = [];
+    for (const raw of (str || '').split(',')) {
+      const t = raw.trim();
+      if (!t) continue;
+      if (t.endsWith('*')) prefixes.push(t.slice(0, -1));
+      else explicit.add(t);
+    }
+    return { explicit, prefixes, empty: !explicit.size && !prefixes.length };
+  }
+  function matches(name, sel) {
+    if (sel.explicit.has(name)) return true;
+    return sel.prefixes.some((p) => name.startsWith(p));
+  }
+
+  /** Compute current enabled set from settings (env-or-stored values). */
+  function computeEnabled() {
+    const allow = parseSelector(settings.tools.value);
+    const deny = parseSelector(settings.disable.value);
+    const enabled = new Set();
+    for (const g of TOOL_CATALOG) {
+      for (const t of g.tools) {
+        if (!allow.empty && !matches(t.name, allow)) continue;
+        if (!deny.empty && matches(t.name, deny)) continue;
+        enabled.add(t.name);
+      }
+    }
+    return enabled;
+  }
+
+  function toolsLocked() {
+    return settings.tools.source === 'env' || settings.disable.source === 'env';
+  }
+
+  function escapeHtmlAttr(s) {
+    return String(s).replace(/[&<>"]/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
+  }
+
   function renderSettings() {
-    const sourceLabel = (s) =>
-      s.source === 'env' ? 'set via env (locked)' :
-      s.source === 'stored' ? 'saved locally' : 'default';
     const setSrc = (id, src) => {
       const el = $(id);
       el.textContent = sourceLabel(src);
       el.classList.toggle('env', src.source === 'env');
     };
     setSrc('src-readonly', settings.readonly);
-    setSrc('src-tools', settings.tools);
-    setSrc('src-disable', settings.disable);
 
     $('set-readonly').checked = settings.readonly.value === 'true';
     $('set-readonly').disabled = settings.readonly.source === 'env';
 
-    $('set-tools').value = settings.tools.value || '';
-    $('set-tools').disabled = settings.tools.source === 'env';
+    const locked = toolsLocked();
+    $('env-pinned').classList.toggle('hidden', !locked);
 
-    $('set-disable').value = settings.disable.value || '';
-    $('set-disable').disabled = settings.disable.source === 'env';
+    const enabled = computeEnabled();
+    const wrap = $('tool-groups');
+    wrap.innerHTML = '';
+    for (const g of TOOL_CATALOG) {
+      const det = document.createElement('details');
+      det.className = 'tool-group';
+      det.open = false;
+      det.dataset.groupId = g.id;
+
+      const onCount = g.tools.filter((t) => enabled.has(t.name)).length;
+      const total = g.tools.length;
+
+      const summary = document.createElement('summary');
+      summary.innerHTML =
+        '<span class="tool-group-head">' + escapeHtmlAttr(g.title) +
+        ' <span class="tool-group-count" data-count>(' + onCount + '/' + total + ')</span></span>' +
+        '<span class="tool-group-actions">' +
+          '<button type="button" data-action="all">All</button>' +
+          '<button type="button" data-action="none">None</button>' +
+        '</span>';
+      det.appendChild(summary);
+
+      const list = document.createElement('div');
+      list.className = 'tool-list';
+      for (const t of g.tools) {
+        const id = 'tool-' + t.name;
+        const item = document.createElement('div');
+        item.className = 'tool-item';
+        item.dataset.tool = t.name;
+        item.innerHTML =
+          '<input type="checkbox" id="' + id + '" ' + (enabled.has(t.name) ? 'checked' : '') +
+            (locked ? ' disabled' : '') + ' />' +
+          '<label for="' + id + '">' +
+            '<span class="tool-name">' + escapeHtmlAttr(t.name) + '</span>' +
+            '<span class="tool-desc">' + escapeHtmlAttr(t.desc) + '</span>' +
+          '</label>';
+        list.appendChild(item);
+      }
+      det.appendChild(list);
+      wrap.appendChild(det);
+
+      summary.querySelector('[data-action="all"]').onclick = (e) => {
+        e.preventDefault();
+        if (locked) return;
+        list.querySelectorAll('input[type="checkbox"]').forEach((cb) => { cb.checked = true; });
+        updateGroupCount(det);
+        updateSummary();
+      };
+      summary.querySelector('[data-action="none"]').onclick = (e) => {
+        e.preventDefault();
+        if (locked) return;
+        list.querySelectorAll('input[type="checkbox"]').forEach((cb) => { cb.checked = false; });
+        updateGroupCount(det);
+        updateSummary();
+      };
+      list.addEventListener('change', () => { updateGroupCount(det); updateSummary(); });
+    }
+    updateSummary();
   }
+
+  function updateGroupCount(det) {
+    const total = det.querySelectorAll('input[type="checkbox"]').length;
+    const on = det.querySelectorAll('input[type="checkbox"]:checked').length;
+    det.querySelector('[data-count]').textContent = '(' + on + '/' + total + ')';
+  }
+
+  function updateSummary() {
+    const all = document.querySelectorAll('#tool-groups input[type="checkbox"]');
+    const on = document.querySelectorAll('#tool-groups input[type="checkbox"]:checked');
+    $('settings-summary').textContent = on.length + ' / ' + all.length + ' tools enabled';
+  }
+
+  $('tool-filter').oninput = (e) => {
+    const q = e.target.value.trim().toLowerCase();
+    for (const det of document.querySelectorAll('.tool-group')) {
+      let any = false;
+      for (const item of det.querySelectorAll('.tool-item')) {
+        const hit = !q || item.dataset.tool.toLowerCase().includes(q);
+        item.classList.toggle('hidden', !hit);
+        if (hit) any = true;
+      }
+      det.open = !!q && any;
+      det.style.display = any ? '' : 'none';
+    }
+  };
+
+  $('select-all').onclick = () => {
+    if (toolsLocked()) return;
+    document.querySelectorAll('#tool-groups input[type="checkbox"]').forEach((cb) => { cb.checked = true; });
+    for (const det of document.querySelectorAll('.tool-group')) updateGroupCount(det);
+    updateSummary();
+  };
+  $('select-none').onclick = () => {
+    if (toolsLocked()) return;
+    document.querySelectorAll('#tool-groups input[type="checkbox"]').forEach((cb) => { cb.checked = false; });
+    for (const det of document.querySelectorAll('.tool-group')) updateGroupCount(det);
+    updateSummary();
+  };
 
   function settingsMsg(text, kind) {
     const el = $('settings-msg');
@@ -450,15 +628,47 @@ export function renderAuthPage(
     if (kind) el.classList.add(kind);
   }
 
+  /**
+   * Turn the checked state of every tool checkbox into the smallest
+   * env-style selector pair (allowlist / blocklist) that produces the
+   * same enabled set.
+   *
+   * - all enabled  → both empty (default)
+   * - all disabled → impossible to express via env; we set tools='_none'
+   *                  which matches nothing, equivalent to disabling everything
+   * - more enabled than disabled → blocklist of the disabled ones
+   * - otherwise → allowlist of the enabled ones
+   */
+  function checkboxesToSelectors() {
+    const allNames = [];
+    const onNames = [];
+    const offNames = [];
+    for (const item of document.querySelectorAll('#tool-groups .tool-item')) {
+      const name = item.dataset.tool;
+      allNames.push(name);
+      const cb = item.querySelector('input[type="checkbox"]');
+      if (cb.checked) onNames.push(name); else offNames.push(name);
+    }
+    if (offNames.length === 0) return { tools: '', disable: '' };
+    if (onNames.length === 0) return { tools: '_none', disable: '' };
+    if (offNames.length <= onNames.length) {
+      return { tools: '', disable: offNames.join(',') };
+    }
+    return { tools: onNames.join(','), disable: '' };
+  }
+
   $('save-settings').onclick = async () => {
     settingsMsg('Saving…');
     $('save-settings').disabled = true;
     try {
+      const sel = checkboxesToSelectors();
       const payload = {
         auth_id: AUTH_ID,
         readonly: $('set-readonly').checked,
-        tools: $('set-tools').value.trim(),
-        disable: $('set-disable').value.trim(),
+        // Only send fields the user can actually edit; the server keeps
+        // env-locked values untouched anyway, but we avoid sending stale data.
+        tools: settings.tools.source === 'env' ? undefined : sel.tools,
+        disable: settings.disable.source === 'env' ? undefined : sel.disable,
       };
       const r = await fetch('/authorize/save-settings', {
         method: 'POST',

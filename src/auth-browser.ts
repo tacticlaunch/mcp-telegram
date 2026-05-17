@@ -6,6 +6,7 @@ import { dirname, join } from 'path';
 import open from 'open';
 
 import { renderAuthPage } from './auth-page.js';
+import { TOOL_CATALOG } from './tool-catalog.js';
 import {
   listAccounts,
   setStoredCredentials,
@@ -179,7 +180,9 @@ function runBrowserPage(mode: PageMode, opts: { timeoutMs?: number }): Promise<A
           LOG_LEVEL: process.env.LOG_LEVEL,
         };
         res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
-        return res.end(renderAuthPage(authId, accounts, creds, env, pkgMeta, settingsSnapshot(), mode));
+        return res.end(
+          renderAuthPage(authId, accounts, creds, env, pkgMeta, settingsSnapshot(), TOOL_CATALOG, mode)
+        );
       }
 
       if (req.method === 'GET' && url.pathname === '/logo.png') {
