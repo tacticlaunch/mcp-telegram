@@ -43,8 +43,11 @@ export function renderAuthPage(
   initialStep: 'login' | 'settings' = 'login'
 ): string {
   const brandLink = pkg.repoUrl
-    ? `<a href="${escapeAttr(pkg.repoUrl)}" target="_blank" rel="noopener">${escapeText(pkg.name)}</a>`
+    ? `<a href="${escapeAttr(pkg.repoUrl)}" target="_blank" rel="noopener noreferrer">${escapeText(pkg.name)}</a>`
     : escapeText(pkg.name);
+  const logoHtml = pkg.repoUrl
+    ? `<a class="logo-link" href="${escapeAttr(pkg.repoUrl)}" target="_blank" rel="noopener noreferrer" aria-label="${escapeAttr(pkg.name)} repository"><img class="logo" src="/logo.png" alt="${escapeAttr(pkg.name)}" /></a>`
+    : `<img class="logo" src="/logo.png" alt="${escapeAttr(pkg.name)}" />`;
   const accountsJson = JSON.stringify(accounts);
   const credsJson = JSON.stringify(creds);
   const envJson = JSON.stringify(env);
@@ -82,7 +85,10 @@ export function renderAuthPage(
   body.wide .wrap { max-width: 1100px; }
   body.settings-only .card { display: none; }
   .header { display: flex; flex-direction: column; align-items: center; gap: 6px; }
-  .logo { width: 56px; height: 56px; object-fit: contain; }
+  .logo { width: 56px; height: 56px; object-fit: contain; display: block; }
+  .logo-link { display: inline-block; line-height: 0; border-radius: 8px; transition: transform .12s; }
+  .logo-link:hover { transform: scale(1.05); }
+  .logo-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
   .brand-line { font-size: 12px; color: var(--muted); letter-spacing: 0.02em; margin: 0; }
   .brand-line b { color: var(--fg); font-weight: 600; }
   .brand-line a { color: var(--fg); }
@@ -257,7 +263,7 @@ export function renderAuthPage(
 <body>
 <div class="wrap">
 <div class="header">
-  <img class="logo" src="/logo.png" alt="" />
+  ${logoHtml}
   <p class="brand-line"><b>${brandLink}</b> &middot; local sign-in &middot; <code>127.0.0.1</code></p>
 </div>
 <div class="card">
