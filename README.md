@@ -145,13 +145,24 @@ To add another account, ask the agent to call `login` again.
 | `invokeMtproto` | Call any raw MTProto method by name. Auto-resolves `peer`/`channel`/`user` strings. |
 
 <details>
-<summary><b>Accounts & profile</b> (8)</summary>
+<summary><b>Sessions (local)</b> (4)</summary>
+
+These are local-only: they manage which Telegram sessions live in `~/.mcp-telegram/` and the settings UI. No Telegram API call beyond the sign-in flow itself.
 
 | Tool | What it does |
 | --- | --- |
+| `listAccounts` | List signed-in accounts. |
 | `login` | Browser-based sign-in. Adds an account. |
 | `logout` | Drop a local session and revoke it on Telegram. |
-| `listAccounts` | List signed-in accounts. |
+| `openSettings` | Open the local settings page (tool surface + read-only). |
+
+</details>
+
+<details>
+<summary><b>Profile</b> (5)</summary>
+
+| Tool | What it does |
+| --- | --- |
 | `getMe` | Return the profile of the authenticated user. |
 | `updateProfile` | Change own first/last name and bio. |
 | `updateMyUsername` | Set or clear own `@username`. |

@@ -24,14 +24,20 @@ export interface ToolGroup {
 
 export const TOOL_CATALOG: ToolGroup[] = [
   {
-    id: 'accounts',
-    title: 'Accounts & profile',
+    id: 'sessions',
+    title: 'Sessions (local)',
     tools: [
+      { name: 'listAccounts', desc: 'List signed-in accounts' },
       { name: 'login', desc: 'Sign in to a new account' },
       { name: 'logout', desc: 'Drop a session', mutating: true },
-      { name: 'listAccounts', desc: 'List signed-in accounts' },
-      { name: 'getMe', desc: 'Current user profile' },
       { name: 'openSettings', desc: 'Open this settings page' },
+    ],
+  },
+  {
+    id: 'profile',
+    title: 'Profile',
+    tools: [
+      { name: 'getMe', desc: 'Current user profile' },
       { name: 'updateProfile', desc: 'Edit own name / bio', mutating: true },
       { name: 'updateMyUsername', desc: 'Edit own @username', mutating: true },
       { name: 'setBirthday', desc: 'Set birthday on profile', mutating: true },
