@@ -180,8 +180,13 @@ export function renderAuthPage(
     padding: 12px 22px; border-bottom: 1px solid var(--border);
     display: flex; gap: 8px; align-items: center;
   }
-  .settings-toolbar input { flex: 1; padding: 9px 12px; font-size: 13px; }
+  .settings-toolbar input {
+    flex: 1 1 auto; min-width: 0; width: auto;
+    padding: 9px 12px; font-size: 13px;
+  }
+  .settings-toolbar button { width: auto; flex: 0 0 auto; }
   button.mini { padding: 9px 14px; margin: 0; font-size: 12.5px; font-weight: 500; }
+  .tool-group-actions button { width: auto; }
   #tool-groups {
     padding: 18px 22px;
     display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
