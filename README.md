@@ -5,7 +5,7 @@
   <h1 align="center">mcp-telegram</h1>
 </p>
 <p align="center">
-  <b>Telegram for AI agents.</b> Two transports: <b>MCP server</b> for Claude / Codex / Cursor / Claude Code / VS Code / Cline / Windsurf, and a lightweight <b>CLI + agent-skill</b> bundle for ~50× lower context cost in Claude Code, Codex CLI, and Cursor. Real Telegram user account via MTProto, browser-based local sign-in, 100+ operations.
+  <b>Telegram MCP server</b> for Claude, Codex, Cursor, Claude Code, VS Code, Cline, Windsurf, and other MCP clients. Real Telegram user account via MTProto, browser-based local sign-in, 100+ tools. Need lazy-loading + lower context cost? See <a href="https://github.com/beautyfree/telegram-skill"><b>telegram-skill</b></a>, the skill-based companion.
 </p>
 <div align="center">
 
@@ -27,16 +27,21 @@ A [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server that co
 1. Node.js `>=20`
 2. Telegram API credentials from [my.telegram.org/apps](https://my.telegram.org/apps) — `api_id` and `api_hash`
 
-## Two ways to plug in
+## Want a lighter transport?
 
-| Transport | When to use | Context cost (idle) | Setup |
-|---|---|---|---|
-| **MCP server** | Any MCP client (Claude Desktop, Cursor, VS Code, Codex IDE, Cline, Windsurf, Goose, hosted runtimes) | ~12.7k tokens always loaded | `npx add-mcp mcp-telegram` |
-| **CLI + agent-skill** | Claude Code, Codex CLI, Cursor (any agent that can shell out) | **0 tokens** until skill triggers, ~250 tokens active | `npx mcp-telegram mcp-tg install` |
+This package is the **MCP server** — every tool schema (~12,700 tokens) sits in your agent's context on every turn. Good for any MCP client and for hosted runtimes that can't shell out.
 
-The CLI path loads skill markdown lazily — by [Anthropic's progressive-disclosure spec](https://code.claude.com/docs/en/skills) — so 12k tokens of MCP tool schemas don't sit in your context when you aren't talking to Telegram. The same `mcp-tg` binary also runs the MCP server (`mcp-tg mcp`) if you want both in one install.
+If your agent is **Claude Code / Codex CLI / Cursor / Gemini CLI / Cline / Windsurf**, there's a [companion package — `telegram-skill`](https://github.com/beautyfree/telegram-skill) — that ships the same Telegram surface as a [universal agent skill](https://code.claude.com/docs/en/skills). The agent only loads the skill instructions when your prompt mentions Telegram — **~50× lower context cost** in idle. `telegram-skill` depends on this package for the MTProto core, so the two are interoperable (same session, same login).
 
-### Path 1 — MCP server
+```bash
+npm i -g telegram-skill
+tg-skill login
+tg-skill install        # auto-detect every supported agent on your machine
+```
+
+Continue below for the MCP install path.
+
+## Install
 
 **Option A — automatic, all clients:**
 
@@ -132,41 +137,6 @@ args = ["-y", "mcp-telegram"]
 env = { TELEGRAM_API_ID = "123456", TELEGRAM_API_HASH = "abc..." }
 ```
 </details>
-
-### Path 2 — CLI + agent-skill (lazy-loaded)
-
-For Claude Code, Codex CLI, and Cursor — the skill markdown lives on disk, the agent only loads it when your request mentions Telegram. Saves ~12k tokens of context every other turn.
-
-```bash
-# one-time
-npm i -g mcp-telegram
-mcp-tg login                    # browser-based sign-in (same flow as MCP)
-mcp-tg install                  # auto-detect Claude Code + Codex CLI, copy skill bundle
-# optional:
-mcp-tg install cursor           # generates .cursor/rules/telegram.mdc in the current project
-mcp-tg install all              # all detected clients
-mcp-tg doctor                   # JSON: which clients detected, where installed
-```
-
-Installs the `telegram` agent-skill (universal [SKILL.md format](https://code.claude.com/docs/en/skills)) into:
-
-- `~/.claude/skills/telegram/` — Claude Code
-- `~/.agents/skills/telegram/` — Codex CLI (per the [Agent Skills spec](https://developers.openai.com/codex/skills))
-- `~/.cursor/plugins/local/telegram/` — Cursor (native [plugin format](https://cursor.com/docs/plugins) with bundled `skills/`, `mcp.json`, and manifest)
-
-Then in the agent: *"summarize @hackernews from today"*, *"tag my Saved Messages by topic"*, *"send hello to @friend"* — the agent reads the skill, shells out to `mcp-tg`, and parses JSON. No MCP server running.
-
-Use the CLI standalone too — it prints JSON, parse with `jq`:
-
-```bash
-mcp-tg dialogs --limit 10 | jq '.[] | {title, unreadCount}'
-mcp-tg search-global "deploy" --limit 20
-mcp-tg saved tags
-mcp-tg react me 12345 🧠              # tag a Saved Message
-mcp-tg saved search --tag 🧠 --limit 50   # pull everything tagged "🧠"
-```
-
-Run `mcp-tg help` for the full reference, or read [`skills/telegram/SKILL.md`](skills/telegram/SKILL.md) to see exactly what the agent sees.
 
 ## First-time sign in
 

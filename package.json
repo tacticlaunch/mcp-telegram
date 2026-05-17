@@ -1,7 +1,7 @@
 {
   "name": "mcp-telegram",
   "version": "3.0.0",
-  "description": "Telegram for AI agents (MTProto). Ships two transports: a 12k-token MCP server for Claude/Cursor/Codex/VS Code/Cline/Windsurf, and a `mcp-tg` CLI + agent-skill bundle for lazy-loaded use in Claude Code, Codex CLI, and Cursor (~50× lower context cost). Read dialogs, global search, send/edit/forward/react, tag Saved Messages (Premium reaction-tags), moderate channels, transcribe voice. Browser-based sign-in, multi-account.",
+  "description": "Telegram MCP server (MTProto). Connect Claude, Codex, Cursor, Claude Code, VS Code, Cline, Windsurf, and other MCP clients to a real Telegram user account: read dialogs, search messages globally, send/edit/forward, react/poll, moderate channels, tag Saved Messages (Premium reaction-tags), manage stories/contacts/folders, transcribe voice notes, and call any raw MTProto method. Browser-based local sign-in, multi-account. For a lazy-loaded skill/CLI alternative see telegram-skill.",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -70,17 +70,22 @@
   ],
   "files": [
     "dist",
-    "assets",
-    "skills"
+    "assets"
   ],
+  "exports": {
+    ".": "./dist/index.js",
+    "./client": "./dist/telegram.js",
+    "./state": "./dist/state.js",
+    "./auth-browser": "./dist/auth-browser.js",
+    "./helpers": "./dist/tools/_helpers.js",
+    "./logger": "./dist/logger.js"
+  },
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "cli": "node dist/cli.js",
     "dev": "tsx watch src/index.ts",
     "lint": "eslint src --ext .ts",
-    "measure-tokens": "node scripts/measure-tokens.mjs",
-    "prepublishOnly": "npm run build && chmod +x dist/index.js dist/cli.js"
+    "prepublishOnly": "npm run build && chmod +x dist/index.js"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
@@ -102,8 +107,7 @@
     "node": ">=20.0.0"
   },
   "bin": {
-    "mcp-telegram": "dist/index.js",
-    "mcp-tg": "dist/cli.js"
+    "mcp-telegram": "dist/index.js"
   },
   "publishConfig": {
     "access": "public"
