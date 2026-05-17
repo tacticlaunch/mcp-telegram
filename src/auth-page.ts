@@ -303,41 +303,6 @@ export function renderAuthPage(
     </div>
   </div>
 
-  <div id="settings-card" class="settings hidden">
-    <div class="settings-top">
-      <div>
-        <h2>Tool surface</h2>
-        <p class="lede">Pick which tools the agent sees. Restart your MCP client after saving.</p>
-      </div>
-      <div class="settings-summary" id="settings-summary"></div>
-    </div>
-
-    <div class="settings-meta">
-      <label class="toggle">
-        <input id="set-readonly" type="checkbox" />
-        <span class="setting-name">Read-only mode</span>
-        <span class="setting-source" id="src-readonly"></span>
-      </label>
-      <div id="env-pinned" class="env-pinned hidden">
-        Per-tool selection is pinned by <code>MCP_TELEGRAM_TOOLS</code> / <code>MCP_TELEGRAM_DISABLE</code> in the environment. Unset them to edit here.
-      </div>
-    </div>
-
-    <div class="settings-toolbar">
-      <input id="tool-filter" type="search" placeholder="Filter tools by name…" />
-      <button id="select-all" class="ghost mini">Select all</button>
-      <button id="select-none" class="ghost mini">Select none</button>
-    </div>
-
-    <div id="tool-groups"></div>
-
-    <div class="settings-footer">
-      <div class="settings-msg" id="settings-msg"></div>
-      <button id="close-tab" class="ghost">Close</button>
-      <button id="save-settings">Save</button>
-    </div>
-  </div>
-
   <div class="foot">
     <details>
       <summary>Environment</summary>
@@ -345,6 +310,42 @@ export function renderAuthPage(
     </details>
   </div>
 </div>
+
+<div id="settings-card" class="settings hidden">
+  <div class="settings-top">
+    <div>
+      <h2>Tool surface</h2>
+      <p class="lede">Pick which tools the agent sees. Restart your MCP client after saving.</p>
+    </div>
+    <div class="settings-summary" id="settings-summary"></div>
+  </div>
+
+  <div class="settings-meta">
+    <label class="toggle">
+      <input id="set-readonly" type="checkbox" />
+      <span class="setting-name">Read-only mode</span>
+      <span class="setting-source" id="src-readonly"></span>
+    </label>
+    <div id="env-pinned" class="env-pinned hidden">
+      Per-tool selection is pinned by <code>MCP_TELEGRAM_TOOLS</code> / <code>MCP_TELEGRAM_DISABLE</code> in the environment. Unset them to edit here.
+    </div>
+  </div>
+
+  <div class="settings-toolbar">
+    <input id="tool-filter" type="search" placeholder="Filter tools by name…" />
+    <button id="select-all" class="ghost mini">Select all</button>
+    <button id="select-none" class="ghost mini">Select none</button>
+  </div>
+
+  <div id="tool-groups"></div>
+
+  <div class="settings-footer">
+    <div class="settings-msg" id="settings-msg"></div>
+    <button id="close-tab" class="ghost">Close</button>
+    <button id="save-settings">Save</button>
+  </div>
+</div>
+
 <p class="safety">Everything runs on your machine. Inputs go directly to Telegram's MTProto servers, nothing is sent anywhere else.</p>
 </div>
 
