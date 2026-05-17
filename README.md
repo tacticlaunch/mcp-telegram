@@ -1,21 +1,26 @@
 <p align="center">
-  <img src="assets/logo.png" alt="mcp-telegram" width="120" />
+  <img width="20%" src="assets/logo.png" alt="mcp-telegram" />
 </p>
+<p align="center">
+  <h1 align="center">mcp-telegram</h1>
+</p>
+<p align="center">
+  Telegram in your AI agent. MCP server for the user account API (MTProto), with browser-based sign-in and 100+ tools.
+</p>
+<div align="center">
 
-<h1 align="center">mcp-telegram</h1>
-
-[![npm version](https://img.shields.io/npm/v/mcp-telegram.svg)](https://www.npmjs.com/package/mcp-telegram)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![npm version](https://badgen.net/npm/v/mcp-telegram)](https://www.npmjs.com/package/mcp-telegram)
+[![License](https://img.shields.io/npm/l/mcp-telegram)](https://github.com/beautyfree/mcp-telegram/blob/main/LICENSE)
 [![Node](https://img.shields.io/badge/node-%3E%3D20-brightgreen)](package.json)
 
-A Model Context Protocol (MCP) server that lets AI agents (Claude, Cursor, VS Code, Codex, etc.) read your Telegram via MTProto.
+</div>
 
-- Drop-in `npx` package — no separate daemon to babysit.
-- **Browser-based login**: call the `login` tool, a tab pops open, enter phone → code → 2FA, done.
-- **Multi-account**: log in to as many Telegram accounts as you want; pass `accountId` to any tool.
+A [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server that connects [Cursor](https://cursor.com), [Claude Desktop](https://claude.ai), and any other MCP client to a real Telegram account via [MTProto](https://core.telegram.org/mtproto)—so your agent can read, search, send, moderate, and manage chats from chat or automated tool calls instead of clicking through the Telegram UI.
+
+**Use it to:** read dialogs and search messages globally · send/edit/forward/react/poll · download media and transcribe voice notes · moderate channels (ban/restrict/promote, invite links, slow-mode, admin log, forum topics) · manage stories, contacts, drafts, notifications, folders, privacy · or fall through to the raw MTProto bridge for anything else. All against a single signed-in user account—no bot required.
 
 > [!WARNING]
-> This server signs in as a real Telegram user (not a bot) via MTProto. Sessions live in `~/.mcp-telegram/`. Treat that directory like a password.
+> This server signs in as a real Telegram user (not a bot). Sessions live in `~/.mcp-telegram/`. Treat that directory like a password.
 
 ## Prerequisites
 
