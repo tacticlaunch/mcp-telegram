@@ -10,16 +10,35 @@ import {
   getAccount,
   upsertAccount,
   deleteAccount,
+  getStoredCredentials,
 } from './state.js';
 import { logger } from './logger.js';
 
+export type CredentialsSource = 'env' | 'stored' | 'missing';
+
+export function credentialsStatus(): { source: CredentialsSource; api_id_masked?: string } {
+  const envId = process.env.TELEGRAM_API_ID;
+  const envHash = process.env.TELEGRAM_API_HASH;
+  if (envId && envHash) return { source: 'env', api_id_masked: mask(envId) };
+  const stored = getStoredCredentials();
+  if (stored) return { source: 'stored', api_id_masked: mask(stored.api_id) };
+  return { source: 'missing' };
+}
+
+function mask(s: string): string {
+  if (s.length <= 4) return '*'.repeat(s.length);
+  return `${s.slice(0, 2)}${'*'.repeat(Math.max(s.length - 4, 1))}${s.slice(-2)}`;
+}
+
 function apiCreds(): { apiId: number; apiHash: string } {
-  const apiId = process.env.TELEGRAM_API_ID;
-  const apiHash = process.env.TELEGRAM_API_HASH;
-  if (!apiId || !apiHash) {
-    throw new Error('TELEGRAM_API_ID and TELEGRAM_API_HASH must be set in the environment');
-  }
-  return { apiId: parseInt(apiId, 10), apiHash };
+  const envId = process.env.TELEGRAM_API_ID;
+  const envHash = process.env.TELEGRAM_API_HASH;
+  if (envId && envHash) return { apiId: parseInt(envId, 10), apiHash: envHash };
+  const stored = getStoredCredentials();
+  if (stored) return { apiId: parseInt(stored.api_id, 10), apiHash: stored.api_hash };
+  throw new Error(
+    'Telegram API credentials are not configured. Set TELEGRAM_API_ID + TELEGRAM_API_HASH in the env, or enter them during sign-in.'
+  );
 }
 
 function sessionPathFor(accountId: string): string {

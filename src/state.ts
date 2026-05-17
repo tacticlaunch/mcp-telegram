@@ -10,9 +10,15 @@ export interface AccountRecord {
   created_at: number;
 }
 
+export interface ApiCredentials {
+  api_id: string;
+  api_hash: string;
+}
+
 interface StateShape {
   version: 1;
   accounts: Record<string, AccountRecord>;
+  credentials?: ApiCredentials;
 }
 
 const baseDir = process.env.MCP_TELEGRAM_HOME || join(homedir(), '.mcp-telegram');
@@ -68,5 +74,15 @@ export function upsertAccount(input: Omit<AccountRecord, 'created_at'> & { creat
 export function deleteAccount(id: string): void {
   const state = loadState();
   delete state.accounts[id];
+  saveState();
+}
+
+export function getStoredCredentials(): ApiCredentials | undefined {
+  return loadState().credentials;
+}
+
+export function setStoredCredentials(creds: ApiCredentials): void {
+  const state = loadState();
+  state.credentials = creds;
   saveState();
 }

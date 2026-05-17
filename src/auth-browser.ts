@@ -3,11 +3,12 @@ import { randomBytes } from 'crypto';
 import open from 'open';
 
 import { renderAuthPage } from './auth-page.js';
-import { listAccounts } from './state.js';
+import { listAccounts, setStoredCredentials } from './state.js';
 import {
   loginStart,
   loginSubmitCode,
   loginSubmitPassword,
+  credentialsStatus,
 } from './telegram.js';
 import { AccountRecord } from './state.js';
 import { logger } from './logger.js';
@@ -73,8 +74,9 @@ export function runBrowserLogin(opts: { timeoutMs?: number } = {}): Promise<Acco
 
       if (req.method === 'GET' && (url.pathname === '/' || url.pathname === '/authorize')) {
         const accounts = listAccounts().map((a) => ({ id: a.id, phone: a.phone, username: a.username }));
+        const creds = credentialsStatus();
         res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
-        return res.end(renderAuthPage(authId, accounts));
+        return res.end(renderAuthPage(authId, accounts, creds));
       }
 
       if (req.method !== 'POST') {
@@ -84,6 +86,21 @@ export function runBrowserLogin(opts: { timeoutMs?: number } = {}): Promise<Acco
       const body = await readJsonBody(req);
       if (body.auth_id !== authId) {
         return sendJson(res, 400, { error: 'invalid_session' });
+      }
+
+      if (url.pathname === '/authorize/save-credentials') {
+        const status = credentialsStatus();
+        if (status.source === 'env') {
+          return sendJson(res, 400, {
+            error: 'TELEGRAM_API_ID/TELEGRAM_API_HASH are set in the environment and take precedence. Unset them to edit here.',
+          });
+        }
+        const api_id = String(body.api_id || '').trim();
+        const api_hash = String(body.api_hash || '').trim();
+        if (!/^\d+$/.test(api_id)) return sendJson(res, 400, { error: 'api_id must be numeric' });
+        if (api_hash.length < 16) return sendJson(res, 400, { error: 'api_hash looks too short' });
+        setStoredCredentials({ api_id, api_hash });
+        return sendJson(res, 200, { ok: true });
       }
 
       if (url.pathname === '/authorize/login-start') {
